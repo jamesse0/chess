@@ -8,7 +8,12 @@ package chess;
  */
 public class ChessPosition {
 
+    private final int the_row;
+    private final int the_col;
+
     public ChessPosition(int row, int col) {
+        the_row = row;
+        the_col = col;
     }
 
     /**
@@ -16,7 +21,7 @@ public class ChessPosition {
      * 1 codes for the bottom row
      */
     public int getRow() {
-        throw new RuntimeException("Not implemented");
+        return the_row;
     }
 
     /**
@@ -24,6 +29,12 @@ public class ChessPosition {
      * 1 codes for the left row
      */
     public int getColumn() {
-        throw new RuntimeException("Not implemented");
+
+        return the_col;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("[%d,%d]", the_row, the_col);
     }
 }
