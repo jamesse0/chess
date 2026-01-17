@@ -82,6 +82,9 @@ public class ChessPiece {
         else if (piece.getPieceType() == PieceType.KNIGHT) {
             return ValidKnightMoves.validMoves(myPosition,piece,board);
         }
+        else if (piece.getPieceType() == PieceType.KING) {
+            return ValidKingMoves.validMoves(myPosition,piece,board);
+        }
         else {
             return ValidRookMoves.validMoves(myPosition,piece,board);
         }
