@@ -2,16 +2,16 @@ package chess;
 import java.util.*;
 public class ValidBishopMoves {
 
-    public static List<ChessMove> validMoves(ChessPosition startPosition, ChessPiece thePiece, ChessBoard theBoard) { // returns a list of ChessMove that a bishop can make
-        List<ChessMove> vMoves = new ArrayList<>();
+    public static List<ChessMove> validMoves(ChessPosition sPos, ChessPiece thePiece, ChessBoard theBoard) { // returns a list of ChessMove that a bishop can make
+        List<ChessMove> listVMoves = new ArrayList<>();
         int i = 1;
-        while ((startPosition.getRow()+i <= 8) && (startPosition.getColumn()+i <= 8)) {
-            ChessPosition newPosition = new ChessPosition(startPosition.getRow()+i,startPosition.getColumn()+i);
-            ChessMove newMove = new ChessMove(startPosition, newPosition, null);
-            if (theBoard.getPiece(newPosition) != null) {
-                ChessPiece otherPiece = theBoard.getPiece((newPosition));
+        while ((sPos.getRow()+i <= 8) && (sPos.getColumn()+i <= 8)) {
+            ChessPosition nPosition = new ChessPosition(sPos.getRow()+i,sPos.getColumn()+i);
+            ChessMove nMove = new ChessMove(sPos, nPosition, null);
+            if (theBoard.getPiece(nPosition) != null) {
+                ChessPiece otherPiece = theBoard.getPiece((nPosition));
                 if (otherPiece.getTeamColor() != thePiece.getTeamColor()) {
-                    vMoves.add(newMove);
+                    listVMoves.add(nMove);
                     break;
                 }
                 else {
@@ -19,18 +19,18 @@ public class ValidBishopMoves {
                 }
             }
             else {
-                vMoves.add(newMove);
+                listVMoves.add(nMove);
             }
             ++i;
         }
         i = 1;
-        while ((startPosition.getRow()+i <= 8) && (startPosition.getColumn()-i >= 1)) {
-            ChessPosition newPosition = new ChessPosition(startPosition.getRow()+i,startPosition.getColumn()-i);
-            ChessMove newMove = new ChessMove(startPosition, newPosition, null);
-            if (theBoard.getPiece(newPosition) != null) {
-                ChessPiece otherPiece = theBoard.getPiece((newPosition));
+        while ((sPos.getRow()+i <= 8) && (sPos.getColumn()-i >= 1)) {
+            ChessPosition nPosition = new ChessPosition(sPos.getRow()+i,sPos.getColumn()-i);
+            ChessMove nMove = new ChessMove(sPos, nPosition, null);
+            if (theBoard.getPiece(nPosition) != null) {
+                ChessPiece otherPiece = theBoard.getPiece((nPosition));
                 if (otherPiece.getTeamColor() != thePiece.getTeamColor()) {
-                    vMoves.add(newMove);
+                    listVMoves.add(nMove);
                     break;
                 }
                 else {
@@ -38,18 +38,18 @@ public class ValidBishopMoves {
                 }
             }
             else {
-                vMoves.add(newMove);
+                listVMoves.add(nMove);
             }
             ++i;
         }
         i = 1;
-        while ((startPosition.getRow()-i >= 1) && (startPosition.getColumn()+i <= 8)) {
-            ChessPosition newPosition = new ChessPosition(startPosition.getRow()-i,startPosition.getColumn()+i);
-            ChessMove newMove = new ChessMove(startPosition, newPosition, null);
-            if (theBoard.getPiece(newPosition) != null) {
-                ChessPiece otherPiece = theBoard.getPiece((newPosition));
+        while ((sPos.getRow()-i >= 1) && (sPos.getColumn()+i <= 8)) {
+            ChessPosition nPosition = new ChessPosition(sPos.getRow()-i,sPos.getColumn()+i);
+            ChessMove nMove = new ChessMove(sPos, nPosition, null);
+            if (theBoard.getPiece(nPosition) != null) {
+                ChessPiece otherPiece = theBoard.getPiece((nPosition));
                 if (otherPiece.getTeamColor() != thePiece.getTeamColor()) {
-                    vMoves.add(newMove);
+                    listVMoves.add(nMove);
                     break;
                 }
                 else {
@@ -57,18 +57,18 @@ public class ValidBishopMoves {
                 }
             }
             else {
-                vMoves.add(newMove);
+                listVMoves.add(nMove);
             }
             ++i;
         }
         i=1;
-        while ((startPosition.getRow()-i >= 1) && (startPosition.getColumn()-i >= 1)) {
-            ChessPosition newPosition = new ChessPosition(startPosition.getRow()-i,startPosition.getColumn()-i);
-            ChessMove newMove = new ChessMove(startPosition, newPosition, null);
-            if (theBoard.getPiece(newPosition) != null) {
-                ChessPiece otherPiece = theBoard.getPiece((newPosition));
+        while ((sPos.getRow()-i >= 1) && (sPos.getColumn()-i >= 1)) {
+            ChessPosition nPosition = new ChessPosition(sPos.getRow()-i,sPos.getColumn()-i);
+            ChessMove nMove = new ChessMove(sPos, nPosition, null);
+            if (theBoard.getPiece(nPosition) != null) {
+                ChessPiece otherPiece = theBoard.getPiece((nPosition));
                 if (otherPiece.getTeamColor() != thePiece.getTeamColor()) {
-                    vMoves.add(newMove);
+                    listVMoves.add(nMove);
                     break;
                 }
                 else {
@@ -76,10 +76,10 @@ public class ValidBishopMoves {
                 }
             }
             else {
-                vMoves.add(newMove);
+                listVMoves.add(nMove);
             }
             ++i;
         }
-        return vMoves;
+        return listVMoves;
     }
 }

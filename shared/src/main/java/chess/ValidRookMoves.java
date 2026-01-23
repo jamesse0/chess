@@ -2,16 +2,16 @@ package chess;
 import java.util.*;
 public class ValidRookMoves {
 
-    public static List<ChessMove> validMoves(ChessPosition startPosition, ChessPiece thePiece, ChessBoard theBoard) {// returns ChessMove list of valid Rook moves
-        List<ChessMove> vMoves = new ArrayList<>();
+    public static List<ChessMove> validMoves(ChessPosition sPosition, ChessPiece thePiece, ChessBoard theBoard) {// returns ChessMove list of valid Rook moves
+        List<ChessMove> listValidMoves = new ArrayList<>();
         int i = 1;
-        while (startPosition.getRow()+i <= 8) {
-            ChessPosition newPosition = new ChessPosition(startPosition.getRow()+i,startPosition.getColumn());
-            ChessMove newMove = new ChessMove(startPosition, newPosition, null);
-            if (theBoard.getPiece(newPosition) != null) {
-                ChessPiece otherPiece = theBoard.getPiece((newPosition));
+        while (sPosition.getRow()+i <= 8) {
+            ChessPosition nPosition = new ChessPosition(sPosition.getRow()+i,sPosition.getColumn());
+            ChessMove nMove = new ChessMove(sPosition, nPosition, null);
+            if (theBoard.getPiece(nPosition) != null) {
+                ChessPiece otherPiece = theBoard.getPiece((nPosition));
                 if (otherPiece.getTeamColor() != thePiece.getTeamColor()) {
-                    vMoves.add(newMove);
+                    listValidMoves.add(nMove);
                     break;
                 }
                 else {
@@ -19,18 +19,18 @@ public class ValidRookMoves {
                 }
             }
             else {
-                vMoves.add(newMove);
+                listValidMoves.add(nMove);
             }
             ++i;
         }
         i = 1;
-        while (startPosition.getRow()-i >= 1) {
-            ChessPosition newPosition = new ChessPosition(startPosition.getRow()-i,startPosition.getColumn());
-            ChessMove newMove = new ChessMove(startPosition, newPosition, null);
-            if (theBoard.getPiece(newPosition) != null) {
-                ChessPiece otherPiece = theBoard.getPiece((newPosition));
+        while (sPosition.getRow()-i >= 1) {
+            ChessPosition nPosition = new ChessPosition(sPosition.getRow()-i,sPosition.getColumn());
+            ChessMove nMove = new ChessMove(sPosition, nPosition, null);
+            if (theBoard.getPiece(nPosition) != null) {
+                ChessPiece otherPiece = theBoard.getPiece((nPosition));
                 if (otherPiece.getTeamColor() != thePiece.getTeamColor()) {
-                    vMoves.add(newMove);
+                    listValidMoves.add(nMove);
                     break;
                 }
                 else {
@@ -38,18 +38,18 @@ public class ValidRookMoves {
                 }
             }
             else {
-                vMoves.add(newMove);
+                listValidMoves.add(nMove);
             }
             ++i;
         }
         i = 1;
-        while (startPosition.getColumn()-i >= 1) {
-            ChessPosition newPosition = new ChessPosition(startPosition.getRow(),startPosition.getColumn()-i);
-            ChessMove newMove = new ChessMove(startPosition, newPosition, null);
-            if (theBoard.getPiece(newPosition) != null) {
-                ChessPiece otherPiece = theBoard.getPiece((newPosition));
+        while (sPosition.getColumn()-i >= 1) {
+            ChessPosition nPosition = new ChessPosition(sPosition.getRow(),sPosition.getColumn()-i);
+            ChessMove nMove = new ChessMove(sPosition, nPosition, null);
+            if (theBoard.getPiece(nPosition) != null) {
+                ChessPiece otherPiece = theBoard.getPiece((nPosition));
                 if (otherPiece.getTeamColor() != thePiece.getTeamColor()) {
-                    vMoves.add(newMove);
+                    listValidMoves.add(nMove);
                     break;
                 }
                 else {
@@ -57,18 +57,18 @@ public class ValidRookMoves {
                 }
             }
             else {
-                vMoves.add(newMove);
+                listValidMoves.add(nMove);
             }
             ++i;
         }
         i = 1;
-        while (startPosition.getColumn()+i <= 8) {
-            ChessPosition newPosition = new ChessPosition(startPosition.getRow(),startPosition.getColumn()+i);
-            ChessMove newMove = new ChessMove(startPosition, newPosition, null);
-            if (theBoard.getPiece(newPosition) != null) {
-                ChessPiece otherPiece = theBoard.getPiece((newPosition));
+        while (sPosition.getColumn()+i <= 8) {
+            ChessPosition nPosition = new ChessPosition(sPosition.getRow(),sPosition.getColumn()+i);
+            ChessMove nMove = new ChessMove(sPosition, nPosition, null);
+            if (theBoard.getPiece(nPosition) != null) {
+                ChessPiece otherPiece = theBoard.getPiece((nPosition));
                 if (otherPiece.getTeamColor() != thePiece.getTeamColor()) {
-                    vMoves.add(newMove);
+                    listValidMoves.add(nMove);
                     break;
                 }
                 else {
@@ -76,10 +76,10 @@ public class ValidRookMoves {
                 }
             }
             else {
-                vMoves.add(newMove);
+                listValidMoves.add(nMove);
             }
             ++i;
         }
-        return vMoves;
+        return listValidMoves;
     }
 }
