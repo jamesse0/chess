@@ -3,7 +3,7 @@ package chess;
 import java.util.*;
 
 public class ValidPawnMoves {
-    public static List<ChessMove> validMoves(ChessPosition startPosition, ChessPiece thePiece, ChessBoard theBoard) {
+    public static List<ChessMove> validMoves(ChessPosition startPosition, ChessPiece thePiece, ChessBoard theBoard) {// returns ChessMove list of valid pawn moves
         List<ChessMove> vMoves = new ArrayList<>();
         if (thePiece.getTeamColor() == ChessGame.TeamColor.WHITE) {
             if (startPosition.getRow() == 2) {
@@ -92,7 +92,7 @@ public class ValidPawnMoves {
         return vMoves;
     }
 
-    public static List<ChessMove> promotionMoves(ChessPosition startPosition, ChessPosition endPosition){
+    public static List<ChessMove> promotionMoves(ChessPosition startPosition, ChessPosition endPosition){ //if it is a promotion move this returns a ChessMove list of all promotion moves
         List<ChessMove> pMoves = new ArrayList<>();
         pMoves.add(new ChessMove(startPosition, endPosition, ChessPiece.PieceType.QUEEN));
         pMoves.add(new ChessMove(startPosition, endPosition, ChessPiece.PieceType.BISHOP));

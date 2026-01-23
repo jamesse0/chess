@@ -2,7 +2,7 @@ package chess;
 import java.util.*;
 public class ValidRookMoves {
 
-    public static List<ChessMove> validMoves(ChessPosition startPosition, ChessPiece thePiece, ChessBoard theBoard) {
+    public static List<ChessMove> validMoves(ChessPosition startPosition, ChessPiece thePiece, ChessBoard theBoard) {// returns ChessMove list of valid Rook moves
         List<ChessMove> vMoves = new ArrayList<>();
         int i = 1;
         while (startPosition.getRow()+i <= 8) {

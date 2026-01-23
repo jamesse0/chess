@@ -2,7 +2,7 @@ package chess;
 import java.util.*;
 public class ValidBishopMoves {
 
-    public static List<ChessMove> validMoves(ChessPosition startPosition, ChessPiece thePiece, ChessBoard theBoard) {
+    public static List<ChessMove> validMoves(ChessPosition startPosition, ChessPiece thePiece, ChessBoard theBoard) { // returns a list of ChessMove that a bishop can make
         List<ChessMove> vMoves = new ArrayList<>();
         int i = 1;
         while ((startPosition.getRow()+i <= 8) && (startPosition.getColumn()+i <= 8)) {
