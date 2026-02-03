@@ -54,9 +54,9 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         chess.ChessPiece thePiece = theBoard.getPiece(startPosition);
-        ArrayList<ChessMove> all_Moves = (ArrayList<ChessMove>) thePiece.pieceMoves(theBoard, startPosition);
+        ArrayList<ChessMove> vMoves = (ArrayList<ChessMove>) thePiece.pieceMoves(theBoard, startPosition);
         ChessPosition kingPosition = myKing(thePiece.getTeamColor());
-        for (int i = 0; i < all_Moves.size(); i++) {
+        for (int i = 0; i < vMoves.size(); i++) {
             break;
         }
 
@@ -101,7 +101,27 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        ChessPosition kingPosition = myKing(teamColor);
+
+    }
+
+    public ArrayList<ChessPosition> listEndPosition(TeamColor team) {
+        ArrayList<ChessPosition> allEndPositions = new ArrayList<>();
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
+                ChessPosition currPosition = new ChessPosition(i,j);
+                ChessPiece currPiece = theBoard.getPiece(currPosition);
+                if (currPiece != null) {
+                    if (currPiece.getTeamColor() != team) {
+                        ArrayList<ChessMove> currPieceMoves = (ArrayList<ChessMove>) currPiece.pieceMoves(theBoard, currPosition);
+                        for (ChessMove currMove: currPieceMoves) {
+                            allEndPositions.add(currMove.getEndPosition());
+                        }
+                    }
+                }
+            }
+        }
+        return allEndPositions;
     }
 
     /**
