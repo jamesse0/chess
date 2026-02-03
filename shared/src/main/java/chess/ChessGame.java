@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -55,12 +56,11 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         chess.ChessPiece thePiece = theBoard.getPiece(startPosition);
         ArrayList<ChessMove> vMoves = (ArrayList<ChessMove>) thePiece.pieceMoves(theBoard, startPosition);
-        ChessPosition kingPosition = myKing(thePiece.getTeamColor());
-        for (int i = 0; i < vMoves.size(); i++) {
-            break;
+        for (int i = vMoves.size() - 1; i >= 0; i--) {
+
         }
 
-
+        return List.of();
     }
 
     public ChessPosition myKing(TeamColor myTeam) {
@@ -79,6 +79,17 @@ public class ChessGame {
         return kingPosition;
     }
 
+    public ChessBoard simulateMove (ChessMove move, ChessBoard givenBoard) {
+        ChessBoard board = givenBoard;
+        ChessPiece thePiece = board.getPiece(move.getStartPosition());
+        board.addPiece(move.getStartPosition(), null);
+        if (move.getPromotionPiece() != null) {
+            thePiece = new ChessPiece(thePiece.getTeamColor(), move.getPromotionPiece());
+        }
+        board.addPiece(move.getEndPosition(), thePiece);
+        return board;
+    }
+
     /**
      * Makes a move in a chess game
      *
@@ -88,10 +99,10 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessPiece thePiece = theBoard.getPiece(move.getStartPosition());
         theBoard.addPiece(move.getStartPosition(), null);
-        theBoard.addPiece(move.getEndPosition(), thePiece);
         if (move.getPromotionPiece() != null) {
             thePiece = new ChessPiece(thePiece.getTeamColor(), move.getPromotionPiece());
         }
+        theBoard.addPiece(move.getEndPosition(), thePiece);
     }
 
     /**
@@ -102,7 +113,19 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         ChessPosition kingPosition = myKing(teamColor);
-
+        ArrayList<ChessPosition> enemyEndPositions = new ArrayList<>();
+        if (teamColor == TeamColor.WHITE) {
+            enemyEndPositions = listEndPosition(TeamColor.BLACK);
+        }
+        else {
+            enemyEndPositions = listEndPosition(TeamColor.WHITE);
+        }
+        for (ChessPosition enemyRange: enemyEndPositions) {
+            if (enemyRange == kingPosition) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public ArrayList<ChessPosition> listEndPosition(TeamColor team) {
