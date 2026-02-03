@@ -56,11 +56,17 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         chess.ChessPiece thePiece = theBoard.getPiece(startPosition);
         ArrayList<ChessMove> vMoves = (ArrayList<ChessMove>) thePiece.pieceMoves(theBoard, startPosition);
-        for (int i = vMoves.size() - 1; i >= 0; i--) {
-
+        for (int i = 0; i < vMoves.size(); i++) {
+            ChessGame simGame = new ChessGame();
+            simGame.setBoard(theBoard);
+            simGame.setTeamTurn(thePiece.getTeamColor());
+            simGame.simulateMove(vMoves.get(i));
+            if (simGame.isInCheck(thePiece.getTeamColor())) {
+                vMoves.remove(i);
+                i--;
+            }
         }
-
-        return List.of();
+        return vMoves;
     }
 
     public ChessPosition myKing(TeamColor myTeam) {
@@ -79,15 +85,13 @@ public class ChessGame {
         return kingPosition;
     }
 
-    public ChessBoard simulateMove (ChessMove move, ChessBoard givenBoard) {
-        ChessBoard board = givenBoard;
-        ChessPiece thePiece = board.getPiece(move.getStartPosition());
-        board.addPiece(move.getStartPosition(), null);
+    public void simulateMove (ChessMove move) {
+        ChessPiece thePiece = theBoard.getPiece(move.getStartPosition());
+        theBoard.addPiece(move.getStartPosition(), null);
         if (move.getPromotionPiece() != null) {
             thePiece = new ChessPiece(thePiece.getTeamColor(), move.getPromotionPiece());
         }
-        board.addPiece(move.getEndPosition(), thePiece);
-        return board;
+        theBoard.addPiece(move.getEndPosition(), thePiece);
     }
 
     /**
@@ -135,7 +139,7 @@ public class ChessGame {
                 ChessPosition currPosition = new ChessPosition(i,j);
                 ChessPiece currPiece = theBoard.getPiece(currPosition);
                 if (currPiece != null) {
-                    if (currPiece.getTeamColor() != team) {
+                    if (currPiece.getTeamColor() == team) {
                         ArrayList<ChessMove> currPieceMoves = (ArrayList<ChessMove>) currPiece.pieceMoves(theBoard, currPosition);
                         for (ChessMove currMove: currPieceMoves) {
                             allEndPositions.add(currMove.getEndPosition());
