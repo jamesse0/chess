@@ -80,4 +80,20 @@ public class ChessBoard {
     public int hashCode() {
         return Arrays.deepHashCode(board);
     }
+
+    @Override
+    public ChessBoard clone() {
+        ChessBoard theBoard = new ChessBoard();
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j<= 8; j++) {
+                ChessPosition currPosition = new ChessPosition(i,j);
+                ChessPiece currPiece = getPiece(currPosition);
+                if (currPiece != null) {
+                    ChessPiece newPiece = new ChessPiece(currPiece.getTeamColor(), currPiece.getPieceType());
+                    theBoard.addPiece(currPosition, newPiece);
+                }
+            }
+        }
+        return theBoard;
+    }
 }
