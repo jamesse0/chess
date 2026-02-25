@@ -13,12 +13,14 @@ public class UserHandler {
     }
     public void registerHandler(Context ctx) throws DataAccessException {
         var serializer = new Gson();
-        RegisterRequest request = new RegisterRequest(null,null,null);
+        RegisterRequest request;
         request = serializer.fromJson(ctx.body(), RegisterRequest.class);
-        RegisterResult result = null;
+        RegisterResult result;
         result = userService.RegisterService(request);
+        String resultString = serializer.toJson(result);
+        ctx.contentType("application/json");
         ctx.status(200);
-        ctx.json(result);
+        ctx.json(resultString);
 
     }
 
