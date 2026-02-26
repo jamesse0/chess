@@ -50,4 +50,16 @@ public class UserService {
         }
         return result;
     }
+
+    public ClearResult LogoutService (LogoutRequest logoReq) throws DataAccessException {
+        ClearResult result = new ClearResult();
+        if ((logoReq.authToken() == null) ||
+                (authDAO.getAuth(logoReq.authToken()) == null)) {
+            throw new DataAccessException("unauthorized");
+        }
+        else {
+            authDAO.deleteAuth(logoReq.authToken());
+        }
+        return result;
+    }
 }
