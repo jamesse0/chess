@@ -25,7 +25,8 @@ public class Server {
     public int run(int desiredPort) {
         javalin.start(desiredPort);
         javalin.post("/user", userHandler::registerHandler)
-                .delete("/db", clearHandler::handleClear);
+                .delete("/db", clearHandler::handleClear)
+                .post("/session", userHandler::loginHandler);
         // Register your endpoints and exception handlers here.
 
         return javalin.port();

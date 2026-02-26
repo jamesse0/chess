@@ -1,4 +1,5 @@
 package Handler;
+import Service.LoginRequest;
 import Service.RegisterRequest;
 import Service.RegisterResult;
 import Service.UserService;
@@ -8,20 +9,33 @@ import io.javalin.http.Context;
 
 public class UserHandler {
     private final UserService userService;
+    Gson serializer = new Gson();
     public UserHandler(UserService userService) {
         this.userService = userService;
     }
-    public void registerHandler(Context ctx) throws DataAccessException {
-        var serializer = new Gson();
-        RegisterRequest request;
-        request = serializer.fromJson(ctx.body(), RegisterRequest.class);
-        RegisterResult result;
-        result = userService.RegisterService(request);
-        String resultString = serializer.toJson(result);
-        ctx.contentType("application/json");
-        ctx.status(200);
-        ctx.json(resultString);
+    public void registerHandler(Context ctx) {
+        try {
+            RegisterRequest request;
+            request = serializer.fromJson(ctx.body(), RegisterRequest.class);
+            RegisterResult result;
+            result = userService.RegisterService(request);
+            Responder.success(ctx,result);
+        }
+        catch (DataAccessException error) {
+            Responder.fail(ctx, error);
+        }
 
     }
-
+    public void loginHandler (Context ctx) {
+        try {
+            LoginRequest request;
+            request = serializer.fromJson(ctx.body(), LoginRequest.class);
+            RegisterResult result;
+            result = userService.LoginService(request);
+            Responder.success(ctx, result);
+        }
+        catch (DataAccessException error) {
+            Responder.fail(ctx, error);
+        }
+    }
 }

@@ -14,10 +14,15 @@ public class ClearHandler {
 
     public void handleClear (Context ctx) throws DataAccessException {
         var serializer = new Gson();
-        ClearResult result = clearService.clearData();
-        String resultString = serializer.toJson(result);
-        ctx.status(200);
-        ctx.contentType("application/json");
-        ctx.json(resultString);
+        try {
+            ClearResult result = clearService.clearData();
+            String resultString = serializer.toJson(result);
+            ctx.status(200);
+            ctx.contentType("application/json");
+            ctx.result(resultString);
+        }
+        catch (DataAccessException error) {
+            ctx.status(500);
+        }
     }
 }

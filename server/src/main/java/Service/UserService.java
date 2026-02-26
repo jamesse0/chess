@@ -4,6 +4,8 @@ import dataaccess.*;
 import model.AuthData;
 import model.UserData;
 
+import java.util.Objects;
+
 public class UserService {
     private final AuthDAO authDAO;
     private final UserDAO userDAO;
@@ -13,17 +15,38 @@ public class UserService {
         this.userDAO = userDAO;
     }
     public RegisterResult RegisterService (RegisterRequest regReq) throws DataAccessException {
+        if ((regReq.username() == null) || (regReq.password() == null) || (regReq.email() == null)) {
+            throw new DataAccessException("bad request");
+        }
         UserData userData = new UserData(regReq.username(), regReq.password(), regReq.email());
-        RegisterResult result = null;
-        if (userDAO.getUser(userData.username()) == null) {
+        RegisterResult result;
+        if (userDAO.getUser(userData.username()) != null) {
+            throw new DataAccessException("already taken");
+        }
+        else {
             userDAO.createUser(userData);
             String authToken;
             authToken = AuthToken.generateToken();
             AuthData authData = new AuthData(authToken, userData.username());
             authDAO.createAuth(authData);
             result = new RegisterResult(userData.username(), authData.authToken());
+        }
+        return result;
+    }
+
+    public RegisterResult LoginService (LoginRequest logReq) throws DataAccessException {
+        if ((logReq.username() == null) || (logReq.password() == null)) {
+            throw new DataAccessException("bad request");
+        }
+        RegisterResult result;
+        if ((userDAO.getUser(logReq.username()) == null)||
+                (!Objects.equals(userDAO.getUser(logReq.username()).password(), logReq.password()))) {
+            throw new DataAccessException("unauthorized");
         } else {
-            ;
+            String authToken = AuthToken.generateToken();
+            AuthData authData = new AuthData(authToken, logReq.username());
+            authDAO.createAuth(authData);
+            result = new RegisterResult(logReq.username(), authData.authToken());
         }
         return result;
     }
