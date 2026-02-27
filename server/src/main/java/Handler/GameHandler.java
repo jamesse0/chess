@@ -36,4 +36,16 @@ public class GameHandler {
             Responder.fail(ctx, error);
         }
     }
+
+    public void joinGameHandler (Context ctx) {
+        try {
+            String authToken = ctx.header("authorization");
+            JoinGameRequest request = serializer.fromJson(ctx.body(), JoinGameRequest.class);
+            ClearResult result = gameService.joinGameService(request, authToken);
+            Responder.success(ctx,result);
+        }
+        catch (DataAccessException error) {
+            Responder.fail(ctx, error);
+        }
+    }
 }

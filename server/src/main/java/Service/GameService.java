@@ -45,4 +45,40 @@ public class GameService {
         }
         return game;
     }
+
+    public ClearResult joinGameService (JoinGameRequest joinReq, String authToken) throws DataAccessException {
+        ClearResult result = new ClearResult();
+        if ((authToken == null) ||
+                (authDAO.getAuth(authToken) == null)) {
+            throw new DataAccessException("unauthorized");
+        }
+        if ((joinReq.gameID() == 0) || (joinReq.playerColor() == null) || (gameDAO.getGame(joinReq.gameID())==null)
+                || ((!joinReq.playerColor().equals("WHITE")) && (!joinReq.playerColor().equals("BLACK")))) {
+            throw new DataAccessException("bad request");
+        }
+
+        GameData gameData = gameDAO.getGame(joinReq.gameID());
+
+        if (joinReq.playerColor().equals("WHITE")) {
+            if (gameData.whiteUsername() != null) {
+                throw new DataAccessException("already taken");
+            }
+            else {
+                GameData update = new GameData(gameData.gameID(), authDAO.getAuth(authToken).username(),
+                        gameData.blackUsername(), gameData.gameName(), gameData.game());
+                gameDAO.updateGame(update);
+            }
+        }
+        else {
+            if (gameData.blackUsername() != null) {
+                throw new DataAccessException("already taken");
+            }
+            else {
+                GameData update = new GameData(gameData.gameID(), gameData.whiteUsername(),
+                        authDAO.getAuth(authToken).username(), gameData.gameName(), gameData.game());
+                gameDAO.updateGame(update);
+            }
+        }
+        return result;
+    }
 }

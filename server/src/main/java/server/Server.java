@@ -34,7 +34,9 @@ public class Server {
                 .post("/session", userHandler::loginHandler)
                 .delete("/session", userHandler::logoutHandler)
                 .get("/game", gameHandler::listGamesHandler)
-                .post("/game", gameHandler::createGameHandler);
+                .post("/game", gameHandler::createGameHandler)
+                .put("/game", gameHandler::joinGameHandler);
+
         // Register your endpoints and exception handlers here.
 
         return javalin.port();

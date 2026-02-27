@@ -3,6 +3,6 @@ import java.security.SecureRandom;
 public class GameID {
     public static int generateGameID () {
         var sr = new SecureRandom();
-        return sr.nextInt(10000);
+        return 1000 + sr.nextInt(8999);
     }
 }
