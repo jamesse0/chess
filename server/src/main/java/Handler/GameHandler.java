@@ -1,8 +1,6 @@
 package Handler;
 
-import Service.GameService;
-import Service.ListGamesResult;
-import Service.LogoutRequest;
+import Service.*;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import io.javalin.http.Context;
@@ -30,10 +28,12 @@ public class GameHandler {
     public void createGameHandler (Context ctx) {
         try {
             String authToken = ctx.header("authorization");
-
+            CreateGameRequest request = serializer.fromJson(ctx.body(), CreateGameRequest.class);
+            CreateGameResult result = gameService.createGameService(request, authToken);
+            Responder.success(ctx, result);
         }
         catch (DataAccessException error) {
-
+            Responder.fail(ctx, error);
         }
     }
 }

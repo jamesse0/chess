@@ -33,7 +33,8 @@ public class Server {
                 .delete("/db", clearHandler::handleClear)
                 .post("/session", userHandler::loginHandler)
                 .delete("/session", userHandler::logoutHandler)
-                .get("/game", gameHandler::listGamesHandler);
+                .get("/game", gameHandler::listGamesHandler)
+                .post("/game", gameHandler::createGameHandler);
         // Register your endpoints and exception handlers here.
 
         return javalin.port();
