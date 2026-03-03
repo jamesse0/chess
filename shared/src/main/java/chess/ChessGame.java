@@ -179,12 +179,10 @@ public class ChessGame {
             for (int j = 1; j <= 8; j++) {
                 ChessPosition currPosition = new ChessPosition(i,j);
                 ChessPiece currPiece = board.getPiece(currPosition);
-                if (currPiece != null) {
-                    if (currPiece.getTeamColor() == team) {
-                        ArrayList<ChessMove> currPieceMoves = (ArrayList<ChessMove>) currPiece.pieceMoves(board, currPosition);
-                        for (ChessMove currMove: currPieceMoves) {
-                            allEndPositions.add(currMove.getEndPosition());
-                        }
+                if ((currPiece != null) && (currPiece.getTeamColor() == team)) {
+                    ArrayList<ChessMove> currPieceMoves = (ArrayList<ChessMove>) currPiece.pieceMoves(board, currPosition);
+                    for (ChessMove currMove: currPieceMoves) {
+                        allEndPositions.add(currMove.getEndPosition());
                     }
                 }
             }
@@ -199,28 +197,14 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
+        boolean result;
         if (isInCheck(teamColor)) {
-            ArrayList<ChessMove> allValidMoves = new ArrayList<>();
-            for (int i = 1; i <= 8; i++) {
-                for (int j = 1; j <= 8; j++) {
-                    ChessPosition currPosition = new ChessPosition(i,j);
-                    ChessPiece currPiece = theBoard.getPiece(currPosition);
-                    if ((currPiece != null) && (currPiece.getTeamColor() == teamColor)) {
-                        ArrayList<ChessMove> currValidMoves = (ArrayList<ChessMove>) validMoves(currPosition);
-                        allValidMoves.addAll(currValidMoves);
-                    }
-                }
-            }
-            if (allValidMoves.isEmpty()) {
-                return true;
-            }
-            else {
-                return false;
-            }
+           result = endGame(teamColor);
         }
         else {
             return false;
         }
+        return result;
     }
 
     /**
@@ -231,28 +215,30 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
+        boolean result;
         if (!isInCheck(teamColor)) {
-            ArrayList<ChessMove> allValidMoves = new ArrayList<>();
-            for (int i = 1; i <= 8; i++) {
-                for (int j = 1; j <= 8; j++) {
-                    ChessPosition currPosition = new ChessPosition(i, j);
-                    ChessPiece currPiece = theBoard.getPiece(currPosition);
-                    if ((currPiece != null) && (currPiece.getTeamColor() == teamColor)) {
-                        ArrayList<ChessMove> currValidMoves = (ArrayList<ChessMove>) validMoves(currPosition);
-                        allValidMoves.addAll(currValidMoves);
-                    }
-                }
-            }
-            if (allValidMoves.isEmpty()) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        else {
+            result = endGame(teamColor);
+        } else {
             return false;
         }
+        return result;
     }
+
+    public boolean endGame (TeamColor teamColor) {
+        ArrayList<ChessMove> allValidMoves = new ArrayList<>();
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
+                ChessPosition currPosition = new ChessPosition(i, j);
+                ChessPiece currPiece = theBoard.getPiece(currPosition);
+                if ((currPiece != null) && (currPiece.getTeamColor() == teamColor)) {
+                    ArrayList<ChessMove> currValidMoves = (ArrayList<ChessMove>) validMoves(currPosition);
+                    allValidMoves.addAll(currValidMoves);
+                }
+            }
+        }
+        return allValidMoves.isEmpty();
+    }
+
 
     /**
      * Sets this game's chessboard with a given board

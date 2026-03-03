@@ -52,7 +52,7 @@ public class ChessMove {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass()){ return false;}
         ChessMove chessMove = (ChessMove) o;
         return Objects.equals(sp, chessMove.sp) && Objects.equals(ep, chessMove.ep) && pp == chessMove.pp;
     }

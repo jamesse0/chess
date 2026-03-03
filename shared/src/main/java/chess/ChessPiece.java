@@ -22,7 +22,7 @@ public class ChessPiece {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass()) {return false;}
         ChessPiece that = (ChessPiece) o;
         return pCol == that.pCol && pType == that.pType;
     }

@@ -1,7 +1,7 @@
 package chess;
 import java.util.*;
 public class ValidKingMoves {
-    public static List<ChessMove> validMoves (ChessPosition sPos, ChessPiece thePiece, ChessBoard theBoard) { //returns a list of ChessMoves that a King can make
+    public static List<ChessMove> validMoves (ChessPosition sPos, ChessPiece thePiece, ChessBoard theBoard) {
         List<ChessMove> listVMoves = new ArrayList<>();
         if (sPos.getRow()+1 <=8) { //checks the position right in front of the king
             ChessPosition nPosition = new ChessPosition(sPos.getRow() +1, sPos.getColumn());
