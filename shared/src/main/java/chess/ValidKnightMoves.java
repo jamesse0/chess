@@ -2,7 +2,8 @@ package chess;
 import java.util.*;
 public class ValidKnightMoves {
 
-    public static List<ChessMove> validMoves(ChessPosition sPosition, ChessPiece thePiece, ChessBoard theBoard) { //returns a ChessMove list of valid knight moves
+    public static List<ChessMove> validMoves
+            (ChessPosition sPosition, ChessPiece thePiece, ChessBoard theBoard) {
         List<ChessMove> listValidMoves = new ArrayList<>();
         if (sPosition.getRow() + 2 <= 8) {
             if (sPosition.getColumn() - 1 >= 1) {
