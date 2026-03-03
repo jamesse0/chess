@@ -1,9 +1,4 @@
 package service;
-import Service.UserService;
-import Service.RegisterRequest;
-import Service.RegisterResult;
-import Service.LoginRequest;
-import Service.LogoutRequest;
 import dataaccess.*;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,47 +18,47 @@ public class UserServiceTests {
     @Test
     public void validRegister () throws DataAccessException {
         RegisterRequest request = new RegisterRequest("user", "password", "email");
-        RegisterResult result = userService.RegisterService(request);
+        RegisterResult result = userService.registerService(request);
         assertNotNull(result.authToken());
     }
 
     @Test
     public void alreadyTaken() throws DataAccessException {
         RegisterRequest request = new RegisterRequest("user", "password", "email");
-        RegisterResult result = userService.RegisterService(request);
+        RegisterResult result = userService.registerService(request);
         RegisterRequest duplicate = new RegisterRequest("user", "password", "email");
-        assertThrows(DataAccessException.class, () -> {userService.RegisterService(duplicate);});
+        assertThrows(DataAccessException.class, () -> {userService.registerService(duplicate);});
     }
 
     @Test
     public void loginSuccess() throws DataAccessException {
         RegisterRequest request = new RegisterRequest("user", "password", "email");
-        userService.RegisterService(request);
+        userService.registerService(request);
         LoginRequest login = new LoginRequest("user", "password");
-        RegisterResult result = userService.LoginService(login);
+        RegisterResult result = userService.loginService(login);
         assertNotNull(result.authToken());
     }
 
     @Test
     public void badPassword () throws DataAccessException {
         RegisterRequest request = new RegisterRequest("user", "password", "email");
-        userService.RegisterService(request);
+        userService.registerService(request);
         LoginRequest login = new LoginRequest("user", "badpassword");
-        assertThrows(DataAccessException.class, () -> {userService.LoginService(login);});
+        assertThrows(DataAccessException.class, () -> {userService.loginService(login);});
     }
 
     @Test
     public void logoutSuccess () throws DataAccessException {
         RegisterRequest request = new RegisterRequest("user", "password", "email");
-        RegisterResult result = userService.RegisterService(request);
-        userService.LogoutService(new LogoutRequest(result.authToken()));
+        RegisterResult result = userService.registerService(request);
+        userService.logoutService(new LogoutRequest(result.authToken()));
         assertNull(authDAO.getAuth(result.authToken()));
     }
 
     @Test
     public void logoutFail () throws DataAccessException {
         RegisterRequest request = new RegisterRequest("user", "password", "email");
-        RegisterResult result = userService.RegisterService(request);
-        assertThrows(DataAccessException.class, () -> {userService.LogoutService(new LogoutRequest("badAuthToken"));});
+        RegisterResult result = userService.registerService(request);
+        assertThrows(DataAccessException.class, () -> {userService.logoutService(new LogoutRequest("badAuthToken"));});
     }
 }

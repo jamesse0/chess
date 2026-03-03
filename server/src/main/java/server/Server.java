@@ -1,10 +1,10 @@
 package server;
-import Handler.ClearHandler;
-import Handler.GameHandler;
-import Handler.UserHandler;
-import Service.ClearService;
-import Service.GameService;
-import Service.UserService;
+import handler.ClearHandler;
+import handler.GameHandler;
+import handler.UserHandler;
+import service.ClearService;
+import service.GameService;
+import service.UserService;
 import dataaccess.*;
 import io.javalin.*;
 

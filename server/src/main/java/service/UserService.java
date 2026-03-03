@@ -1,4 +1,4 @@
-package Service;
+package service;
 
 import dataaccess.*;
 import model.AuthData;
@@ -14,7 +14,7 @@ public class UserService {
         this.authDAO = authDAO;
         this.userDAO = userDAO;
     }
-    public RegisterResult RegisterService (RegisterRequest regReq) throws DataAccessException {
+    public RegisterResult registerService(RegisterRequest regReq) throws DataAccessException {
         if ((regReq.username() == null) || (regReq.password() == null) || (regReq.email() == null)) {
             throw new DataAccessException("bad request");
         }
@@ -34,7 +34,7 @@ public class UserService {
         return result;
     }
 
-    public RegisterResult LoginService (LoginRequest logReq) throws DataAccessException {
+    public RegisterResult loginService(LoginRequest logReq) throws DataAccessException {
         if ((logReq.username() == null) || (logReq.password() == null)) {
             throw new DataAccessException("bad request");
         }
@@ -51,7 +51,7 @@ public class UserService {
         return result;
     }
 
-    public ClearResult LogoutService (LogoutRequest logoReq) throws DataAccessException {
+    public ClearResult logoutService(LogoutRequest logoReq) throws DataAccessException {
         ClearResult result = new ClearResult();
         if ((logoReq.authToken() == null) ||
                 (authDAO.getAuth(logoReq.authToken()) == null)) {

@@ -1,6 +1,4 @@
 package service;
-import Service.ClearService;
-import Service.UserService;
 import chess.ChessGame;
 import dataaccess.*;
 import model.AuthData;

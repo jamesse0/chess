@@ -1,7 +1,7 @@
-package Handler;
+package handler;
 
-import Service.ClearResult;
-import Service.ClearService;
+import service.ClearResult;
+import service.ClearService;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import io.javalin.http.Context;

@@ -1,5 +1,5 @@
-package Handler;
-import Service.*;
+package handler;
+import service.*;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import io.javalin.http.Context;
@@ -15,7 +15,7 @@ public class UserHandler {
             RegisterRequest request;
             request = serializer.fromJson(ctx.body(), RegisterRequest.class);
             RegisterResult result;
-            result = userService.RegisterService(request);
+            result = userService.registerService(request);
             Responder.success(ctx,result);
         }
         catch (DataAccessException error) {
@@ -29,7 +29,7 @@ public class UserHandler {
             LoginRequest request;
             request = serializer.fromJson(ctx.body(), LoginRequest.class);
             RegisterResult result;
-            result = userService.LoginService(request);
+            result = userService.loginService(request);
             Responder.success(ctx, result);
         }
         catch (DataAccessException error) {
@@ -41,7 +41,7 @@ public class UserHandler {
         try {
             String authToken = ctx.header("authorization");
             LogoutRequest request = new LogoutRequest(authToken);
-            ClearResult result = userService.LogoutService(request);
+            ClearResult result = userService.logoutService(request);
             Responder.success(ctx, result);
         }
         catch (DataAccessException error) {

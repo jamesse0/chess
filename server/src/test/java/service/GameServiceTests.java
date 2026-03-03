@@ -1,18 +1,12 @@
 package service;
 
-import Service.GameService;
-import Service.LogoutRequest;
-import Service.ListGamesResult;
-import Service.CreateGameRequest;
-import Service.CreateGameResult;
-import Service.JoinGameRequest;
 import chess.ChessGame;
 import dataaccess.*;
 import model.AuthData;
 import model.GameData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GameServiceTests {

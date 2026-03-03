@@ -1,4 +1,4 @@
-package Service;
+package service;
 
 import chess.ChessGame;
 import dataaccess.AuthDAO;
