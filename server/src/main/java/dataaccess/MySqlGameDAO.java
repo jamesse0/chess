@@ -6,8 +6,9 @@ import java.util.Collection;
 import java.util.List;
 
 public class MySqlGameDAO implements GameDAO{
-
-
+    public MySqlGameDAO() throws DataAccessException {
+        configureDatabase();
+    }
     @Override
     public void createGame(GameData gameData) throws DataAccessException {
 
@@ -41,6 +42,7 @@ public class MySqlGameDAO implements GameDAO{
             black_username VARCHAR(255),
             game_name VARCHAR(255) NOT NULL,
             game TEXT,
+            PRIMARY KEY (game_id)
             )
             
             """

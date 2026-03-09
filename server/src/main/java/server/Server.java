@@ -15,10 +15,18 @@ public class Server {
     private final UserHandler userHandler;
     private final GameHandler gameHandler;
     public Server() {
+
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
-        AuthDAO authDAO = new MemoryAuthDAO();
-        UserDAO userDAO = new MemoryUserDAO();
-        GameDAO gameDAO = new MemoryGameDAO();
+        AuthDAO authDAO = null;
+        UserDAO userDAO = null;
+        GameDAO gameDAO = null;
+        try {
+            authDAO = new MemoryAuthDAO();
+            userDAO = new MySqlUserDAO();
+            gameDAO = new MemoryGameDAO();
+        } catch (DataAccessException error) {
+            System.exit(1);
+        }
         UserService userService = new UserService(authDAO, userDAO);
         ClearService clearService = new ClearService(authDAO, userDAO, gameDAO);
         GameService gameService = new GameService(gameDAO, authDAO);
