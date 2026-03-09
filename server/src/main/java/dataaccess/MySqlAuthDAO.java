@@ -9,7 +9,15 @@ public class MySqlAuthDAO implements AuthDAO{
 
     @Override
     public void createAuth(AuthData authData) throws DataAccessException {
-
+        var statement = "INSERT INTO auths (username,auth_token) VALUES (?,?)";
+        try (Connection conn = DatabaseManager.getConnection()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(statement);
+            preparedStatement.setString(1, authData.username());
+            preparedStatement.setString(2, authData.authToken());
+            preparedStatement.executeUpdate();
+        } catch (SQLException error) {
+            throw new DataAccessException("SQL db error");
+        }
     }
 
     @Override
