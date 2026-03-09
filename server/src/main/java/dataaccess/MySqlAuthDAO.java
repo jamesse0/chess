@@ -43,7 +43,14 @@ public class MySqlAuthDAO implements AuthDAO{
 
     @Override
     public void deleteAuth(String authToken) throws DataAccessException {
-
+        var statement = "DELETE FROM auths WHERE auth_token = ?";
+        try (Connection conn = DatabaseManager.getConnection()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(statement);
+            preparedStatement.setString(1,authToken);
+            ResultSet resultSet = preparedStatement.executeQuery();
+        } catch (SQLException error) {
+            throw new DataAccessException("SQL db error");
+        }
     }
 
     @Override
