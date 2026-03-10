@@ -17,7 +17,7 @@ public class MySqlAuthDAO implements AuthDAO{
             preparedStatement.setString(2, authData.authToken());
             preparedStatement.executeUpdate();
         } catch (SQLException error) {
-            throw new DataAccessException("SQL db error");
+            throw new DataAccessException("Cannot create auth error");
         }
     }
 
@@ -37,7 +37,7 @@ public class MySqlAuthDAO implements AuthDAO{
                 return null;
             }
         } catch (SQLException error) {
-            throw new DataAccessException("SQL db error");
+            throw new DataAccessException("Cannot getAuth error");
         }
     }
 
@@ -47,9 +47,9 @@ public class MySqlAuthDAO implements AuthDAO{
         try (Connection conn = DatabaseManager.getConnection()) {
             PreparedStatement preparedStatement = conn.prepareStatement(statement);
             preparedStatement.setString(1,authToken);
-            ResultSet resultSet = preparedStatement.executeQuery();
+            int resultSet = preparedStatement.executeUpdate();
         } catch (SQLException error) {
-            throw new DataAccessException("SQL db error");
+            throw new DataAccessException("Cannot deleteAuth error");
         }
     }
 

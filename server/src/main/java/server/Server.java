@@ -21,7 +21,7 @@ public class Server {
         UserDAO userDAO = null;
         GameDAO gameDAO = null;
         try {
-            authDAO = new MemoryAuthDAO();
+            authDAO = new MySqlAuthDAO();
             userDAO = new MySqlUserDAO();
             gameDAO = new MemoryGameDAO();
         } catch (DataAccessException error) {
