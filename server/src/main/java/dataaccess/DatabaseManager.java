@@ -31,15 +31,14 @@ public class DatabaseManager {
     }
     public static final List<String> createStatements = List.of(
             """
-            CREATE TABLE IF NOT EXISTS games (
-            game_id INT NOT NULL,
-            white_username VARCHAR(255),
-            black_username VARCHAR(255),
-            game_name VARCHAR(255) NOT NULL,
-            game TEXT,
-            PRIMARY KEY (game_id)
+            CREATE TABLE IF NOT EXISTS users (
+            id INT NOT NULL AUTO_INCREMENT,
+            username VARCHAR(255) NOT NULL,
+            password VARCHAR(255) NOT NULL,
+            email VARCHAR(255) NOT NULL,
+            PRIMARY KEY (id),
+            INDEX(username)
             )
-            
             """,
             """
             CREATE TABLE IF NOT EXISTS games (
