@@ -13,16 +13,12 @@ public class ClearHandler {
     }
 
     public void handleClear (Context ctx) throws DataAccessException {
-        var serializer = new Gson();
         try {
             ClearResult result = clearService.clearData();
-            String resultString = serializer.toJson(result);
-            ctx.status(200);
-            ctx.contentType("application/json");
-            ctx.result(resultString);
+            Responder.success(ctx,result);
         }
         catch (DataAccessException error) {
-            ctx.status(500);
+            Responder.fail(ctx,error);
         }
     }
 }

@@ -1,6 +1,7 @@
 package dataaccess;
 
 import java.sql.*;
+import java.util.List;
 import java.util.Properties;
 
 public class DatabaseManager {
@@ -28,7 +29,52 @@ public class DatabaseManager {
             throw new DataAccessException("failed to create database", ex);
         }
     }
+    public static final List<String> createStatements = List.of(
+            """
+            CREATE TABLE IF NOT EXISTS games (
+            game_id INT NOT NULL,
+            white_username VARCHAR(255),
+            black_username VARCHAR(255),
+            game_name VARCHAR(255) NOT NULL,
+            game TEXT,
+            PRIMARY KEY (game_id)
+            )
+            
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS games (
+            game_id INT NOT NULL,
+            white_username VARCHAR(255),
+            black_username VARCHAR(255),
+            game_name VARCHAR(255) NOT NULL,
+            game TEXT,
+            PRIMARY KEY (game_id)
+            )
 
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS auths (
+            id INT NOT NULL AUTO_INCREMENT,
+            username VARCHAR(255) NOT NULL,
+            auth_token VARCHAR(255) NOT NULL,
+            PRIMARY KEY (id),
+            INDEX(auth_token),
+            INDEX (username)
+            )
+            """
+    );
+    public static void configureDatabase() throws DataAccessException {
+        DatabaseManager.createDatabase();
+        try (Connection conn = DatabaseManager.getConnection()) {
+            for (String statement : createStatements) {
+                try (var preparedStatement = conn.prepareStatement(statement)) {
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException | DataAccessException error){
+            throw new DataAccessException("SQL db error");
+        }
+    }
     /**
      * Create a connection to the database and sets the catalog based upon the
      * properties specified in db.properties. Connections to the database should

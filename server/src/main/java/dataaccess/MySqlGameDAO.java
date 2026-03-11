@@ -13,9 +13,7 @@ import java.util.List;
 
 public class MySqlGameDAO implements GameDAO{
     Gson serializer = new Gson();
-    public MySqlGameDAO() throws DataAccessException {
-        configureDatabase();
-    }
+    public MySqlGameDAO(){}
     @Override
     public void createGame(GameData gameData) throws DataAccessException {
         var statement = "INSERT INTO games (game_id,white_username,black_username,game_name, game) VALUES (?,?,?,?,?)";
@@ -105,33 +103,6 @@ public class MySqlGameDAO implements GameDAO{
             clear.execute(statement);
         } catch (SQLException | DataAccessException error) {
             throw new DataAccessException("clear games error");
-        }
-    }
-
-    private final String[] createStatements = {
-            """
-            CREATE TABLE IF NOT EXISTS games (
-            game_id INT NOT NULL,
-            white_username VARCHAR(255),
-            black_username VARCHAR(255),
-            game_name VARCHAR(255) NOT NULL,
-            game TEXT,
-            PRIMARY KEY (game_id)
-            )
-            
-            """
-    };
-
-    private void configureDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        try (Connection conn = DatabaseManager.getConnection()) {
-            for (String statement : createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException error) {
-            throw new DataAccessException("SQL db error");
         }
     }
 }

@@ -4,9 +4,7 @@ import model.AuthData;
 import model.UserData;
 
 public class MySqlAuthDAO implements AuthDAO{
-    public MySqlAuthDAO () throws DataAccessException {
-        configureDatabase();
-    }
+    public MySqlAuthDAO () {}
 
     @Override
     public void createAuth(AuthData authData) throws DataAccessException {
@@ -61,32 +59,6 @@ public class MySqlAuthDAO implements AuthDAO{
             clear.execute(statement);
         } catch (SQLException | DataAccessException error) {
             throw new DataAccessException("clear auths error");
-        }
-    }
-
-    private final String[] createStatements = {
-            """
-            CREATE TABLE IF NOT EXISTS auths (
-            id INT NOT NULL AUTO_INCREMENT,
-            username VARCHAR(255) NOT NULL,
-            auth_token VARCHAR(255) NOT NULL,
-            PRIMARY KEY (id),
-            INDEX(auth_token),
-            INDEX (username)
-            )
-            """
-    };
-
-    private void configureDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        try (Connection conn = DatabaseManager.getConnection()) {
-            for (String statement : createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException error) {
-            throw new DataAccessException("SQL db error");
         }
     }
 }

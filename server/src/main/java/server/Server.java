@@ -8,6 +8,10 @@ import service.UserService;
 import dataaccess.*;
 import io.javalin.*;
 
+import java.util.Map;
+
+import static dataaccess.DatabaseManager.configureDatabase;
+
 public class Server {
 
     private final Javalin javalin;
@@ -17,16 +21,15 @@ public class Server {
     public Server() {
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
-        AuthDAO authDAO = null;
-        UserDAO userDAO = null;
-        GameDAO gameDAO = null;
         try {
-            authDAO = new MySqlAuthDAO();
-            userDAO = new MySqlUserDAO();
-            gameDAO = new MySqlGameDAO();
+            configureDatabase();
         } catch (DataAccessException error) {
-            System.exit(1);
+            error.printStackTrace();
+            System.err.println("Database Failure");
         }
+        AuthDAO authDAO = new MySqlAuthDAO();
+        UserDAO userDAO = new MySqlUserDAO();
+        GameDAO gameDAO = new MySqlGameDAO();
         UserService userService = new UserService(authDAO, userDAO);
         ClearService clearService = new ClearService(authDAO, userDAO, gameDAO);
         GameService gameService = new GameService(gameDAO, authDAO);
@@ -44,6 +47,8 @@ public class Server {
                 .get("/game", gameHandler::listGamesHandler)
                 .post("/game", gameHandler::createGameHandler)
                 .put("/game", gameHandler::joinGameHandler);
+                //.exception(Exception.class, (error,ctx) -> {ctx.status(500);
+                    //ctx.json(Map.of("message", "Error: " + error.getMessage()));});
 
         // Register your endpoints and exception handlers here.
 
