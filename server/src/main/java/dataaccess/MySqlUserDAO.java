@@ -18,8 +18,8 @@ public class MySqlUserDAO implements UserDAO {
             preparedStatement.setString(2, user.password());
             preparedStatement.setString(3, user.email());
             preparedStatement.executeUpdate();
-        } catch (SQLException error) {
-            throw new DataAccessException("SQL db error");
+        } catch (SQLException | DataAccessException error) {
+            throw new DataAccessException("createUser error");
         }
     }
 
@@ -39,8 +39,8 @@ public class MySqlUserDAO implements UserDAO {
             else {
                 return null;
             }
-        } catch (SQLException error) {
-            throw new DataAccessException("SQL db error");
+        } catch (SQLException | DataAccessException error) {
+            throw new DataAccessException("getUser error");
         }
     }
 
@@ -50,8 +50,8 @@ public class MySqlUserDAO implements UserDAO {
         try (Connection conn = DatabaseManager.getConnection()) {
             Statement clear = conn.createStatement();
             clear.execute(statement);
-        } catch (SQLException error) {
-            throw new DataAccessException("SQL db error");
+        } catch (SQLException | DataAccessException error) {
+            throw new DataAccessException("clear users error");
         }
     }
 

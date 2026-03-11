@@ -28,8 +28,8 @@ public class MySqlGameDAO implements GameDAO{
             String game = serializer.toJson(gameData.game());
             preparedStatement.setString(5, game);
             preparedStatement.executeUpdate();
-        } catch (SQLException error) {
-            throw new DataAccessException("SQL db error");
+        } catch (SQLException | DataAccessException error) {
+            throw new DataAccessException("createGame error");
         }
     }
 
@@ -52,14 +52,14 @@ public class MySqlGameDAO implements GameDAO{
             else {
                 return null;
             }
-        } catch (SQLException error) {
-            throw new DataAccessException("SQL db error");
+        } catch (SQLException | DataAccessException error) {
+            throw new DataAccessException("getGame error");
         }
     }
 
     @Override
     public Collection<GameData> listGames() throws DataAccessException {
-        var statement = "SELECT game FROM games";
+        var statement = "SELECT * FROM games";
         ArrayList<GameData> games = new ArrayList<>();
         try (Connection conn = DatabaseManager.getConnection()) {
             PreparedStatement preparedStatement = conn.prepareStatement(statement);
@@ -74,19 +74,38 @@ public class MySqlGameDAO implements GameDAO{
                 games.add(new GameData(gameID,whiteUsername,blackUsername,gameName,game));
             }
             return games;
-        } catch (SQLException error) {
+        } catch (SQLException | DataAccessException error) {
             throw new DataAccessException("listGames error");
         }
     }
 
     @Override
     public void updateGame(GameData gameData) throws DataAccessException {
-
+        var statement = "UPDATE games SET white_username = ?, black_username = ?," +
+                " game_name = ?, game = ? WHERE game_id = ?";
+        try (Connection conn = DatabaseManager.getConnection()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(statement);
+            preparedStatement.setString(1, gameData.whiteUsername());
+            preparedStatement.setString(2, gameData.blackUsername());
+            preparedStatement.setString(3, gameData.gameName());
+            String gameString = serializer.toJson(gameData.game());
+            preparedStatement.setString(4, gameString);
+            preparedStatement.setInt(5, gameData.gameID());
+            int resultSet = preparedStatement.executeUpdate();
+        }catch (SQLException | DataAccessException error) {
+            throw new DataAccessException("updateGame error");
+        }
     }
 
     @Override
     public void clear() throws DataAccessException {
-
+        var statement = "TRUNCATE TABLE games";
+        try (Connection conn = DatabaseManager.getConnection()) {
+            Statement clear = conn.createStatement();
+            clear.execute(statement);
+        } catch (SQLException | DataAccessException error) {
+            throw new DataAccessException("clear games error");
+        }
     }
 
     private final String[] createStatements = {

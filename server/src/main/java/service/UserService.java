@@ -62,4 +62,8 @@ public class UserService {
         }
         return result;
     }
+
+    private String passwordHasher (String clearTextPassword) {
+
+    }
 }

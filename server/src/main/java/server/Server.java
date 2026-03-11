@@ -23,7 +23,7 @@ public class Server {
         try {
             authDAO = new MySqlAuthDAO();
             userDAO = new MySqlUserDAO();
-            gameDAO = new MemoryGameDAO();
+            gameDAO = new MySqlGameDAO();
         } catch (DataAccessException error) {
             System.exit(1);
         }
