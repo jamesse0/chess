@@ -3,13 +3,10 @@ package dataaccess;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import model.GameData;
-import model.UserData;
-
-import java.lang.reflect.Type;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+
 
 public class MySqlGameDAO implements GameDAO{
     Gson serializer = new Gson();

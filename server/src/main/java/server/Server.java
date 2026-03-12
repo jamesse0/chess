@@ -47,8 +47,6 @@ public class Server {
                 .get("/game", gameHandler::listGamesHandler)
                 .post("/game", gameHandler::createGameHandler)
                 .put("/game", gameHandler::joinGameHandler);
-                //.exception(Exception.class, (error,ctx) -> {ctx.status(500);
-                    //ctx.json(Map.of("message", "Error: " + error.getMessage()));});
 
         // Register your endpoints and exception handlers here.
 

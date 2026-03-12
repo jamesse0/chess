@@ -2,7 +2,6 @@ package dataaccess;
 import java.sql.*;
 import model.UserData;
 
-import javax.swing.plaf.nimbus.State;
 
 public class MySqlUserDAO implements UserDAO {
     public MySqlUserDAO() {}
