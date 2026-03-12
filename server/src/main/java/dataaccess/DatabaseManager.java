@@ -29,7 +29,7 @@ public class DatabaseManager {
             throw new DataAccessException("failed to create database", ex);
         }
     }
-    public static final List<String> createStatements = List.of(
+    public static final List<String> CREATE_STATEMENTS = List.of(
             """
             CREATE TABLE IF NOT EXISTS users (
             id INT NOT NULL AUTO_INCREMENT,
@@ -65,7 +65,7 @@ public class DatabaseManager {
     public static void configureDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (Connection conn = DatabaseManager.getConnection()) {
-            for (String statement : createStatements) {
+            for (String statement : CREATE_STATEMENTS) {
                 try (var preparedStatement = conn.prepareStatement(statement)) {
                     preparedStatement.executeUpdate();
                 }
