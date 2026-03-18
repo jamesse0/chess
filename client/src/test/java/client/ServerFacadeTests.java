@@ -3,6 +3,7 @@ package client;
 import dataaccess.DataAccessException;
 import org.junit.jupiter.api.*;
 import server.Server;
+import service.LoginRequest;
 import service.RegisterRequest;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,6 +21,10 @@ public class ServerFacadeTests {
         facade = new ServerFacade("http://localhost:" + port);
     }
 
+    @BeforeEach
+    public void setup() throws Exception {
+        facade.clear();
+    }
     @AfterAll
     static void stopServer() {
         server.stop();
@@ -42,5 +47,12 @@ public class ServerFacadeTests {
         facade.register(new RegisterRequest("username", "password", "email"));
         assertThrows(Exception.class, () ->  facade.register
                 (new RegisterRequest("username", "password", "email")));
+    }
+
+    @Test
+    public void loginPositive () throws Exception {
+        facade.register(new RegisterRequest("username", "password", "email"));
+        var response = facade.login(new LoginRequest("username", "password"));
+        assertNotNull(response);
     }
 }
