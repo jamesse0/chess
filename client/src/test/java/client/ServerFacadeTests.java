@@ -1,11 +1,15 @@
 package client;
 
+import dataaccess.DataAccessException;
 import org.junit.jupiter.api.*;
 import server.Server;
+import service.RegisterRequest;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class ServerFacadeTests {
-
+    private static ServerFacade facade;
     private static Server server;
 
     @BeforeAll
@@ -13,6 +17,7 @@ public class ServerFacadeTests {
         server = new Server();
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
+        facade = new ServerFacade("http://localhost:" + port);
     }
 
     @AfterAll
@@ -26,4 +31,16 @@ public class ServerFacadeTests {
         Assertions.assertTrue(true);
     }
 
+    @Test
+    public void registerPositive() throws Exception {
+        var response = facade.register(new RegisterRequest("username", "password", "email"));
+        assertNotNull(response);
+    }
+
+    @Test
+    public void registerNegative() throws Exception {
+        facade.register(new RegisterRequest("username", "password", "email"));
+        assertThrows(Exception.class, () ->  facade.register
+                (new RegisterRequest("username", "password", "email")));
+    }
 }
