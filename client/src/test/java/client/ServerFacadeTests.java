@@ -55,4 +55,11 @@ public class ServerFacadeTests {
         var response = facade.login(new LoginRequest("username", "password"));
         assertNotNull(response);
     }
+
+    @Test
+    public void loginNegative () throws Exception {
+        facade.register(new RegisterRequest("username", "password", "email"));
+        assertThrows(Exception.class, () ->  facade.login
+                (new RegisterRequest("username", "badpassword", "email")));
+    }
 }
