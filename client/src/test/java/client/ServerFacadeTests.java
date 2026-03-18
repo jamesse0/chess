@@ -60,6 +60,6 @@ public class ServerFacadeTests {
     public void loginNegative () throws Exception {
         facade.register(new RegisterRequest("username", "password", "email"));
         assertThrows(Exception.class, () ->  facade.login
-                (new RegisterRequest("username", "badpassword", "email")));
+                (new LoginRequest("badusername", "badpassword")));
     }
 }
