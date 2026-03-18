@@ -29,7 +29,7 @@ public class ServerFacade {
         return handleResponse(response, RegisterResult.class);
     }
 
-    public ClearResult logout (LoginRequest request) throws DataAccessException {
+    public ClearResult logout (LogoutRequest request) throws DataAccessException {
         var httpRequest = buildRequest("DELETE", "/session", request);
         var response = sendRequest(httpRequest);
         return handleResponse(response, ClearResult.class);

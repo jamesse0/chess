@@ -4,7 +4,9 @@ import dataaccess.DataAccessException;
 import org.junit.jupiter.api.*;
 import server.Server;
 import service.LoginRequest;
+import service.LogoutRequest;
 import service.RegisterRequest;
+import service.RegisterResult;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -61,5 +63,11 @@ public class ServerFacadeTests {
         facade.register(new RegisterRequest("username", "password", "email"));
         assertThrows(Exception.class, () ->  facade.login
                 (new LoginRequest("badusername", "badpassword")));
+    }
+
+    @Test
+    public void logoutPositive () throws Exception {
+        RegisterResult response = facade.register(new RegisterRequest("username", "password", "email"));
+        assertDoesNotThrow(()-> facade.logout(new LogoutRequest(response.authToken())));
     }
 }
