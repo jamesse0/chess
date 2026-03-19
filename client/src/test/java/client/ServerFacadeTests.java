@@ -70,4 +70,10 @@ public class ServerFacadeTests {
         RegisterResult response = facade.register(new RegisterRequest("username", "password", "email"));
         assertDoesNotThrow(()-> facade.logout(new LogoutRequest(response.authToken())));
     }
+
+    @Test
+    public void logoutNegative () throws Exception {
+        RegisterResult response = facade.register(new RegisterRequest("username", "password", "email"));
+        assertThrows(Exception.class,()-> facade.logout(new LogoutRequest("badauth")));
+    }
 }

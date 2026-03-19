@@ -30,13 +30,21 @@ public class ServerFacade {
     }
 
     public ClearResult logout (LogoutRequest request) throws DataAccessException {
-        var httpRequest = buildRequest("DELETE", "/session", request);
+        var httpRequest = HttpRequest.newBuilder()
+                .uri((URI.create(serverUrl+"/session")))
+                .header("authorization", request.authToken())
+                .DELETE()
+                .build();
         var response = sendRequest(httpRequest);
         return handleResponse(response, ClearResult.class);
     }
 
     public ListGamesResult listGames (LogoutRequest request) throws DataAccessException {
-        var httpRequest = buildRequest("GET", "/game", request);
+        var httpRequest = HttpRequest.newBuilder()
+                .uri((URI.create(serverUrl+"/game")))
+                .header("authorization", request.authToken())
+                .GET()
+                .build();
         var response = sendRequest(httpRequest);
         return handleResponse(response, ListGamesResult.class);
     }
