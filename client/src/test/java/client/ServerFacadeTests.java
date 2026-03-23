@@ -3,10 +3,7 @@ package client;
 import dataaccess.DataAccessException;
 import org.junit.jupiter.api.*;
 import server.Server;
-import service.LoginRequest;
-import service.LogoutRequest;
-import service.RegisterRequest;
-import service.RegisterResult;
+import service.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -75,5 +72,18 @@ public class ServerFacadeTests {
     public void logoutNegative () throws Exception {
         RegisterResult response = facade.register(new RegisterRequest("username", "password", "email"));
         assertThrows(Exception.class,()-> facade.logout(new LogoutRequest("badauth")));
+    }
+
+    @Test
+    public void listPositive () throws Exception {
+        var auth = facade.register(new RegisterRequest("username","password","email"));
+        facade.createGame(new CreateGameRequest("game"), auth.authToken());
+        var games = facade.listGames(new LogoutRequest(auth.authToken()));
+        assertNotNull(games);
+    }
+
+    @Test
+    public void listNegative () throws Exception {
+        assertThrows(Exception.class, () -> facade.listGames(new LogoutRequest("cookedAuth")));
     }
 }
