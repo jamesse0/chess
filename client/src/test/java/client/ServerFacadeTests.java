@@ -83,7 +83,22 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void listNegative () throws Exception {
+    public void listNegative () {
         assertThrows(Exception.class, () -> facade.listGames(new LogoutRequest("cookedAuth")));
+    }
+
+    @Test
+    public void createPositive () throws Exception {
+        var auth = facade.register(new RegisterRequest("username","password","email"));
+        facade.createGame(new CreateGameRequest("game"), auth.authToken());
+        var games = facade.listGames(new LogoutRequest(auth.authToken()));
+        assertNotNull(games);
+    }
+
+    @Test
+    public void createNegative () throws Exception {
+        var auth = facade.register(new RegisterRequest("username","password","email"));
+        assertThrows(Exception.class, ()->facade.createGame
+                (new CreateGameRequest("game"), "badAuth"));
     }
 }
