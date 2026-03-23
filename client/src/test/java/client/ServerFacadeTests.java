@@ -101,4 +101,20 @@ public class ServerFacadeTests {
         assertThrows(Exception.class, ()->facade.createGame
                 (new CreateGameRequest("game"), "badAuth"));
     }
+
+    @Test
+    public void joinPositive () throws Exception {
+        var auth = facade.register(new RegisterRequest("username","password","email"));
+        CreateGameResult result = facade.createGame(new CreateGameRequest("game"), auth.authToken());
+        assertDoesNotThrow(() -> facade.joinGame(new JoinGameRequest
+                ("WHITE", result.gameID()), auth.authToken()));
+    }
+
+    @Test
+    public void joinNegative () throws Exception {
+        var auth = facade.register(new RegisterRequest("username","password","email"));
+        CreateGameResult result = facade.createGame(new CreateGameRequest("game"), auth.authToken());
+        assertThrows(Exception.class,() -> facade.joinGame(new JoinGameRequest
+                ("WHITE", result.gameID()), "badAuth"));
+    }
 }
