@@ -117,4 +117,9 @@ public class ServerFacadeTests {
         assertThrows(Exception.class,() -> facade.joinGame(new JoinGameRequest
                 ("WHITE", result.gameID()), "badAuth"));
     }
+
+    @Test
+    public void clear () throws DataAccessException {
+        assertDoesNotThrow(()->facade.clear());
+    }
 }
