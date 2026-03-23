@@ -49,14 +49,22 @@ public class ServerFacade {
         return handleResponse(response, ListGamesResult.class);
     }
 
-    public CreateGameResult createGame (CreateGameRequest request) throws DataAccessException {
-        var httpRequest = buildRequest("POST", "/game", request);
+    public CreateGameResult createGame (CreateGameRequest request, String authToken) throws DataAccessException {
+        var httpRequest = HttpRequest.newBuilder()
+                .uri((URI.create(serverUrl+"/game")))
+                .header("authorization", authToken)
+                .POST(HttpRequest.BodyPublishers.ofString(new Gson().toJson(request)))
+                .build();
         var response = sendRequest(httpRequest);
         return handleResponse(response, CreateGameResult.class);
     }
 
-    public ClearResult joinGame (JoinGameRequest request) throws DataAccessException {
-        var httpRequest = buildRequest("PUT","/game", request);
+    public ClearResult joinGame (JoinGameRequest request, String authToken) throws DataAccessException {
+        var httpRequest = HttpRequest.newBuilder()
+                .uri((URI.create(serverUrl+"/game")))
+                .header("authorization", authToken)
+                .PUT(HttpRequest.BodyPublishers.ofString(new Gson().toJson(request)))
+                .build();
         var response = sendRequest(httpRequest);
         return handleResponse(response, ClearResult.class);
     }
