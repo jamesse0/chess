@@ -34,4 +34,8 @@ public class Session {
     public String getAuthToken() {
         return authToken;
     }
+
+    public Integer getGameID() {
+        return gameID;
+    }
 }

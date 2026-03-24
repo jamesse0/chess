@@ -54,6 +54,7 @@ public class PostLoginUI {
                   yield State.loggedIN;
               }
           }
+          case "observe" -> handleObserve(tokens);
         };
     }
 
@@ -113,13 +114,28 @@ public class PostLoginUI {
         }
         else {
             JoinGameRequest request = new JoinGameRequest(tokens[2], Integer.parseInt(tokens[1]));
-            ClearResult result = server.joinGame(request, session.getAuthToken());
+            server.joinGame(request, session.getAuthToken());
             session.setGameID(request.gameID());
             session.setTeamColor(request.playerColor());
             String color = EscapeSequences.SET_TEXT_COLOR_MAGENTA;
             String normal = EscapeSequences.RESET_TEXT_COLOR;
             System.out.printf("Joining game %s%d%s as %s%s%s%n",
                     color, request.gameID(), normal, color, request.playerColor(), normal);
+            return State.inGAME;
+        }
+    }
+
+    public State handleObserve (String[] tokens) {
+        if (tokens.length != 2) {
+            System.out.println ("Incorrect Parameters Given. Please try again.");
+            return State.loggedIN;
+        }
+        else {
+            session.setGameID(Integer.parseInt(tokens[1]));
+            String color = EscapeSequences.SET_TEXT_COLOR_MAGENTA;
+            String normal = EscapeSequences.RESET_TEXT_COLOR;
+            System.out.printf("Joining game %s%d%s%n",
+                    color, session.getGameID(), normal);
             return State.inGAME;
         }
     }
