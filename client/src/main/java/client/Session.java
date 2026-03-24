@@ -6,7 +6,7 @@ public class Session {
     private String authToken;
     private String username;
     private Integer gameID;
-    private ChessGame.TeamColor teamColor;
+    private String teamColor;
 
     public Session () {
         authToken = null;
@@ -27,7 +27,7 @@ public class Session {
         this.gameID = gameID;
     }
 
-    public void setTeamColor (ChessGame.TeamColor teamColor) {
+    public void setTeamColor (String teamColor) {
         this.teamColor = teamColor;
     }
 

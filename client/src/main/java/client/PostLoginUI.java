@@ -1,10 +1,9 @@
 package client;
 
 import dataaccess.DataAccessException;
-import service.CreateGameRequest;
-import service.CreateGameResult;
+import model.GameData;
+import service.*;
 import ui.EscapeSequences;
-
 import java.util.Scanner;
 
 public class PostLoginUI {
@@ -39,7 +38,22 @@ public class PostLoginUI {
                   yield State.loggedIN;
               }
           }
-          case "list" ->
+          case "list" -> {
+              try {
+                  yield handleList(tokens);
+              } catch (DataAccessException error) {
+                  System.out.println("Sorry." + error.getMessage() + "Please try again.");
+                  yield State.loggedIN;
+              }
+          }
+          case "join" -> {
+              try {
+                  yield handleJoin(tokens);
+              } catch (DataAccessException error) {
+                  System.out.println("Sorry." + error.getMessage() + "Please try again.");
+                  yield State.loggedIN;
+              }
+          }
         };
     }
 
@@ -70,6 +84,43 @@ public class PostLoginUI {
             CreateGameResult result = server.createGame(request, session.getAuthToken());
             System.out.println("You create Game: " + tokens[1] + ". Type 'list' to find its information.");
             return State.loggedIN;
+        }
+    }
+
+    public State handleList (String[] tokens) throws DataAccessException {
+        if (tokens.length != 1) {
+            System.out.println ("Incorrect Parameters Given. Please try again.");
+            return State.loggedIN;
+        }
+        else {
+            LogoutRequest request = new LogoutRequest(session.getAuthToken());
+            ListGamesResult result = server.listGames(request);
+            for (GameData game: result.games()) {
+                String yellow = EscapeSequences.SET_TEXT_COLOR_YELLOW;
+                String normal = EscapeSequences.RESET_TEXT_COLOR;
+                System.out.printf("%sGame Name: %s%s %sWHITE user: %s%s %sBLACK user: %s%s %sID: %s%d%s%n",
+                        yellow, normal, game.gameName(),yellow, normal, game.whiteUsername(),
+                                yellow, normal, game.blackUsername(),yellow, normal, game.gameID(),normal);
+            }
+            return State.loggedIN;
+        }
+    }
+
+    public State handleJoin (String[] tokens) throws DataAccessException {
+        if (tokens.length != 3) {
+            System.out.println ("Incorrect Parameters Given. Please try again.");
+            return State.loggedIN;
+        }
+        else {
+            JoinGameRequest request = new JoinGameRequest(tokens[2], Integer.parseInt(tokens[1]));
+            ClearResult result = server.joinGame(request, session.getAuthToken());
+            session.setGameID(request.gameID());
+            session.setTeamColor(request.playerColor());
+            String color = EscapeSequences.SET_TEXT_COLOR_MAGENTA;
+            String normal = EscapeSequences.RESET_TEXT_COLOR;
+            System.out.printf("Joining game %s%d%s as %s%s%s%n",
+                    color, request.gameID(), normal, color, request.playerColor(), normal);
+            return State.inGAME;
         }
     }
 }
