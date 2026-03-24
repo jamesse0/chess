@@ -31,4 +31,7 @@ public class Session {
         this.teamColor = teamColor;
     }
 
+    public String getAuthToken() {
+        return authToken;
+    }
 }

@@ -50,6 +50,8 @@ public class PreLoginUI {
             }
             case "quit" -> {
                 System.out.println("Goodbye. See you soon.");
+                session.setAuth(null);
+                session.setUsername(null);
                 yield State.QUIT;
             }
             default -> {
@@ -81,6 +83,7 @@ public class PreLoginUI {
             RegisterResult result = server.register(request);
             session.setAuth(result.authToken());
             session.setUsername(result.username());
+            System.out.println("Registered and logged in as " + result.username() + ". Type 'help' for new options.");
             return State.loggedIN;
         }
     }
@@ -95,6 +98,7 @@ public class PreLoginUI {
             RegisterResult result = server.login(request);
             session.setUsername(result.username());
             session.setAuth(result.authToken());
+            System.out.println("Logged in as " + result.username() + ". Type 'help' for new options.");
             return State.loggedIN;
         }
     }
