@@ -3,5 +3,6 @@ package client;
 public enum State {
     loggedOUT,
     loggedIN,
-    inGAME
+    inGAME,
+    QUIT
 }

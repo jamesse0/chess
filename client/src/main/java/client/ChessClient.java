@@ -16,7 +16,12 @@ public class ChessClient {
     public void run () {
         System.out.println("Welcome to cs240 Chess! type 'help' to start.");
         Scanner scanner = new Scanner(System.in);
-
+        var result = "";
+        while (currState != State.QUIT) {
+            currState = switch (currState) {
+                case State.loggedOUT ->
+            };
+        }
     }
 
 
