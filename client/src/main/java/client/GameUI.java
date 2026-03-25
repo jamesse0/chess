@@ -25,12 +25,13 @@ public class GameUI {
         if (Objects.equals(session.getTeamColor(), "BLACK")){
             isWhite = false;
         }
+        System.out.println("Here is the game, you are the " + session.getTeamColor() + " team.");
         drawBoard(new ChessGame().getBoard(), isWhite);
         System.out.println("Here is the board (currently non-functional). Type 'leave' to return to Game Menu.");
         while (true) {
             String line = scanner.nextLine();
             var tokens = line.split(" ");
-            if (tokens[0].equals("leave")) {
+            if (tokens[0].trim().equals("leave")) {
                 session.setGameID(null);
                 session.setTeamColor(null);
                 return State.loggedIN;
@@ -51,16 +52,22 @@ public class GameUI {
                 String bgColor = isLightSquare ? EscapeSequences.SET_BG_COLOR_WHITE:EscapeSequences.SET_BG_COLOR_BLACK;
                 System.out.print(bgColor);
                 ChessPiece piece = board.getPiece(new ChessPosition(displayRow,displayCol+1));
+                String pieceChar;
                 String pieceColor = piece.getTeamColor() == ChessGame.TeamColor.WHITE ?
                         EscapeSequences.SET_TEXT_COLOR_RED : EscapeSequences.SET_TEXT_COLOR_BLUE;
-                String pieceChar = switch (piece.getPieceType()) {
-                    case ChessPiece.PieceType.KING -> "K";
-                    case ChessPiece.PieceType.QUEEN -> "Q";
-                    case ChessPiece.PieceType.BISHOP -> "B";
-                    case ChessPiece.PieceType.KNIGHT -> "N";
-                    case ChessPiece.PieceType.ROOK -> "R";
-                    case ChessPiece.PieceType.PAWN -> "P";
-                };
+                if (piece == null) {
+                    pieceChar = " ";
+                }
+                else {
+                    pieceChar = switch (piece.getPieceType()) {
+                        case ChessPiece.PieceType.KING -> "K";
+                        case ChessPiece.PieceType.QUEEN -> "Q";
+                        case ChessPiece.PieceType.BISHOP -> "B";
+                        case ChessPiece.PieceType.KNIGHT -> "N";
+                        case ChessPiece.PieceType.ROOK -> "R";
+                        case ChessPiece.PieceType.PAWN -> "P";
+                    };
+                }
                 System.out.print(pieceColor+ " "+pieceChar+" ");
             }
             System.out.println(header_color+ " "+displayRow+ " "+reset);

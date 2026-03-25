@@ -25,7 +25,7 @@ public class PostLoginUI {
         }
         String[] tokens = line.split(" ");
         String command = tokens[0];
-        return switch (command) {
+        return switch (command.trim()) {
           case "help" -> {
               helpStatement();
               yield State.loggedIN;
