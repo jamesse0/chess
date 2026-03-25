@@ -145,7 +145,8 @@ public class PostLoginUI {
             return State.loggedIN;
         }
         else {
-            JoinGameRequest request = new JoinGameRequest(tokens[2], Integer.parseInt(tokens[1]));
+            int gameID = userGames.get(Integer.parseInt(tokens[1])).gameID();
+            JoinGameRequest request = new JoinGameRequest(tokens[2], gameID);
             server.joinGame(request, session.getAuthToken());
             session.setGameID(request.gameID());
             session.setTeamColor(request.playerColor());
