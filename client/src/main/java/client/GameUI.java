@@ -53,12 +53,13 @@ public class GameUI {
                 System.out.print(bgColor);
                 ChessPiece piece = board.getPiece(new ChessPosition(displayRow,displayCol+1));
                 String pieceChar;
-                String pieceColor = piece.getTeamColor() == ChessGame.TeamColor.WHITE ?
-                        EscapeSequences.SET_TEXT_COLOR_RED : EscapeSequences.SET_TEXT_COLOR_BLUE;
+                String pieceColor =isLightSquare?EscapeSequences.SET_BG_COLOR_WHITE:EscapeSequences.SET_BG_COLOR_BLACK;
                 if (piece == null) {
                     pieceChar = " ";
                 }
                 else {
+                    pieceColor = piece.getTeamColor() == ChessGame.TeamColor.WHITE ?
+                            EscapeSequences.SET_TEXT_COLOR_RED : EscapeSequences.SET_TEXT_COLOR_BLUE;
                     pieceChar = switch (piece.getPieceType()) {
                         case ChessPiece.PieceType.KING -> "K";
                         case ChessPiece.PieceType.QUEEN -> "Q";
@@ -77,7 +78,7 @@ public class GameUI {
 
     private void printHeader(boolean isWhite) {
         String header_color = EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_BLACK;
-        String[] header = {" a "," b "," c "," d "," e "," f "," g "," h "};
+        String[] header = {"   "," a "," b "," c "," d "," e "," f "," g "," h ","   "};
         if (isWhite) {
             System.out.print(header_color);
             for (String letter: header) {
