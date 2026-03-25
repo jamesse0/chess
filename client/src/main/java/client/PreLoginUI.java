@@ -35,7 +35,7 @@ public class PreLoginUI {
             case "register" -> {
                 try {
                     yield handleRegister(tokens);
-                } catch (DataAccessException error) {
+                } catch (Exception error) {
                     System.out.println
                             ("Sorry. We could not register you. That username may already be taken. Please try again.");
                     yield State.loggedOUT;
@@ -44,7 +44,7 @@ public class PreLoginUI {
             case "login" -> {
                 try {
                     yield handleLogin(tokens);
-                } catch (DataAccessException error) {
+                } catch (Exception error) {
                     System.out.println("Sorry. We could not log you in. Have you already registered? If so, " +
                             "ensure your username and password are correct. Please try again.");
                     yield State.loggedOUT;

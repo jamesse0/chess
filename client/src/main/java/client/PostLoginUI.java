@@ -37,7 +37,7 @@ public class PostLoginUI {
           case "create" -> {
               try {
                   yield handleCreate(tokens);
-              } catch (DataAccessException error) {
+              } catch (Exception error) {
                   System.out.println
                           ("Sorry. There was an issue creating your game. Check that your inputs are correct. Please try again.");
                   yield State.loggedIN;
@@ -46,7 +46,7 @@ public class PostLoginUI {
           case "list" -> {
               try {
                   yield handleList(tokens);
-              } catch (DataAccessException error) {
+              } catch (Exception error) {
                   System.out.println("Sorry. There was an issue listing all the games. Please try again.");
                   yield State.loggedIN;
               }
@@ -54,7 +54,7 @@ public class PostLoginUI {
           case "join" -> {
               try {
                   yield handleJoin(tokens);
-              } catch (DataAccessException error) {
+              } catch (Exception error) {
                   System.out.println("Sorry. There was an issue joining this game. " +
                           "Make sure that the team you're joining has not already been taken.Please try again.");
                   yield State.loggedIN;
@@ -64,7 +64,7 @@ public class PostLoginUI {
           case "logout" -> {
               try {
                   yield handleLogout(tokens);
-              } catch (DataAccessException error) {
+              } catch (Exception error) {
                   System.out.println("Sorry. There was an issue logging out. Please try again.");
                   yield State.loggedIN;
               }
@@ -74,7 +74,7 @@ public class PostLoginUI {
                   handleLogout(tokens);
                   System.out.println("Goodbye. See you soon.");
                   yield State.QUIT;
-              } catch (DataAccessException error) {
+              } catch (Exception error) {
                   System.out.println("Sorry. There was an issue quiting. Please try again.");
                   yield State.loggedIN;
               }
@@ -146,7 +146,13 @@ public class PostLoginUI {
             return State.loggedIN;
         }
         else {
-            int gameID = userGames.get(Integer.parseInt(tokens[1])-1).gameID();
+            int gameID;
+            try {
+                gameID = userGames.get(Integer.parseInt(tokens[1]) - 1).gameID();
+            } catch (Exception error) {
+                System.out.println("Enter the ID as a digit.");
+                return State.loggedIN;
+            }
             JoinGameRequest request = new JoinGameRequest(tokens[2], gameID);
             server.joinGame(request, session.getAuthToken());
             session.setGameID(request.gameID());
@@ -165,12 +171,18 @@ public class PostLoginUI {
             return State.loggedIN;
         }
         else {
-            int gameID = userGames.get(Integer.parseInt(tokens[1])-1).gameID();
+            int gameID;
+            try {
+                gameID = userGames.get(Integer.parseInt(tokens[1]) - 1).gameID();
+            } catch (Exception error) {
+                System.out.println("Enter the ID as a digit.");
+                return State.loggedIN;
+            }
             session.setGameID(gameID);
             String color = EscapeSequences.SET_TEXT_COLOR_MAGENTA;
             String normal = EscapeSequences.RESET_TEXT_COLOR;
-            System.out.printf("Joining game %s%d%s%n",
-                    color, session.getGameID(), normal);
+            System.out.printf("Joining game %s%s%s%n",
+                    color, tokens[1], normal);
             return State.inGAME;
         }
     }
