@@ -27,7 +27,7 @@ public class GameUI {
         }
         System.out.println("Here is the game, you are the " + session.getTeamColor() + " team.");
         drawBoard(new ChessGame().getBoard(), isWhite);
-        System.out.println("Here is the board (currently non-functional). Type 'leave' to return to Game Menu.");
+        System.out.printf("%nHere is the board (currently non-functional). Type 'leave' to return to Game Menu.%n");
         while (true) {
             String line = scanner.nextLine();
             var tokens = line.split(" ");
