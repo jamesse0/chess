@@ -46,9 +46,11 @@ public class GameUI {
                     case ChessPiece.PieceType.ROOK -> "R";
                     case ChessPiece.PieceType.PAWN -> "P";
                 };
-                System.out.print(pieceColor+ " "+pieceChar+" ")
+                System.out.print(pieceColor+ " "+pieceChar+" ");
             }
+            System.out.println(header_color+ " "+displayRow+ " "+reset);
         }
+        printHeader(isWhite);
     }
 
     private void printHeader(boolean isWhite) {
