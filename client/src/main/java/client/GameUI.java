@@ -26,11 +26,13 @@ public class GameUI {
             isWhite = false;
         }
         drawBoard(new ChessGame().getBoard(), isWhite);
-        System.out.println("Here is the board (currently non-functional). Type 'leave' to return to Game Menu.")
+        System.out.println("Here is the board (currently non-functional). Type 'leave' to return to Game Menu.");
         while (true) {
             String line = scanner.nextLine();
             var tokens = line.split(" ");
             if (tokens[0].equals("leave")) {
+                session.setGameID(null);
+                session.setTeamColor(null);
                 return State.loggedIN;
             }
         }

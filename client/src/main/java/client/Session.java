@@ -25,7 +25,7 @@ public class Session {
         this.username = username;
     }
 
-    public void setGameID (int gameID) {
+    public void setGameID (Integer gameID) {
         this.gameID = gameID;
     }
 

@@ -20,13 +20,15 @@ public class ChessClient {
         Scanner scanner = new Scanner(System.in);
         PreLoginUI preLoginUI = new PreLoginUI(server, scanner, session);
         PostLoginUI postLoginUI = new PostLoginUI(server, scanner, session);
+        GameUI gameUI = new GameUI(server, scanner, session);
         while (currState != State.QUIT) {
             System.out.print(prompt());
             System.out.print(EscapeSequences.RESET_TEXT_COLOR);
             currState = switch (currState) {
                 case State.loggedOUT -> preLoginUI.run();
                 case State.loggedIN -> postLoginUI.run();
-                case State.inGAME ->
+                case State.inGAME -> gameUI.run();
+                default -> State.loggedOUT;
             };
         }
     }
