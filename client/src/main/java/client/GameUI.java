@@ -6,6 +6,7 @@ import chess.ChessPiece;
 import chess.ChessPosition;
 import ui.EscapeSequences;
 
+import java.util.Objects;
 import java.util.Scanner;
 
 public class GameUI {
@@ -20,7 +21,18 @@ public class GameUI {
     }
 
     public State run () {
-
+        boolean isWhite = true;
+        if (Objects.equals(session.getTeamColor(), "BLACK")){
+            isWhite = false;
+        }
+        drawBoard(new ChessGame().getBoard(), isWhite);
+        while (true) {
+            String line = scanner.nextLine();
+            var tokens = line.split(" ");
+            if (tokens[0].equals("leave")) {
+                return State.loggedIN;
+            }
+        }
     }
 
     private void drawBoard(ChessBoard board, boolean isWhite) {

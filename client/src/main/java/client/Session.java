@@ -48,4 +48,8 @@ public class Session {
     public ChessGame getGame() {
         return game;
     }
+
+    public String getTeamColor() {
+        return teamColor;
+    }
 }
