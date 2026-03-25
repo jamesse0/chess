@@ -55,6 +55,23 @@ public class PostLoginUI {
               }
           }
           case "observe" -> handleObserve(tokens);
+          case "logout" -> {
+              try {
+                  yield handleLogout(tokens);
+              } catch (DataAccessException error) {
+                  System.out.println("Sorry." + error.getMessage() + "Please try again.");
+                  yield State.loggedIN;
+              }
+          }
+          case "quit" -> {
+              try {
+                  handleLogout(tokens);
+                  yield State.QUIT;
+              } catch (DataAccessException error) {
+                  System.out.println("Sorry." + error.getMessage() + "Please try again.");
+                  yield State.loggedIN;
+              }
+          }
         };
     }
 
@@ -137,6 +154,19 @@ public class PostLoginUI {
             System.out.printf("Joining game %s%d%s%n",
                     color, session.getGameID(), normal);
             return State.inGAME;
+        }
+    }
+
+    public State handleLogout (String[] tokens) throws DataAccessException {
+        if (tokens.length != 1) {
+            System.out.println ("Incorrect Parameters Given. Please try again.");
+            return State.loggedIN;
+        }
+        else {
+            LogoutRequest request = new LogoutRequest(session.getAuthToken());
+            server.logout(request);
+            session.setAuth(null);
+            return State.loggedOUT;
         }
     }
 }
