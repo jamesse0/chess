@@ -26,6 +26,7 @@ public class GameUI {
             isWhite = false;
         }
         drawBoard(new ChessGame().getBoard(), isWhite);
+        System.out.println("Here is the board (currently non-functional). Type 'leave' to return to Game Menu.")
         while (true) {
             String line = scanner.nextLine();
             var tokens = line.split(" ");
