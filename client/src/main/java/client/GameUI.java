@@ -43,12 +43,12 @@ public class GameUI {
     }
 
     private void drawBoard(ChessBoard board, boolean isWhite) {
-        String header_color = EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_BLACK;
+        String headerColor = EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_BLACK;
         String reset = EscapeSequences.RESET_TEXT_COLOR+EscapeSequences.RESET_BG_COLOR;
         printHeader(isWhite);
         for (int r=0; r<8; r++) {
             int displayRow = isWhite ? (8 - r) : (r + 1);
-            System.out.print(header_color+ " "+displayRow+ " "+reset);
+            System.out.print(headerColor+ " "+displayRow+ " "+reset);
             for (int c = 0; c < 8; c++){
                 int displayCol = isWhite ? c : (7 - c);
                 boolean isLightSquare = (r + displayCol) % 2 == 0;
@@ -74,23 +74,23 @@ public class GameUI {
                 }
                 System.out.print(pieceColor+ " "+pieceChar+" ");
             }
-            System.out.println(header_color+ " "+displayRow+ " "+reset);
+            System.out.println(headerColor+ " "+displayRow+ " "+reset);
         }
         printHeader(isWhite);
     }
 
     private void printHeader(boolean isWhite) {
-        String header_color = EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_BLACK;
+        String headerColor = EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_BLACK;
         String[] header = {"   "," a "," b "," c "," d "," e "," f "," g "," h ","   "};
         if (isWhite) {
-            System.out.print(header_color);
+            System.out.print(headerColor);
             for (String letter: header) {
                 System.out.print(letter);
             }
             System.out.println(EscapeSequences.RESET_TEXT_COLOR+EscapeSequences.RESET_BG_COLOR);
         }
         else {
-            System.out.print(header_color);
+            System.out.print(headerColor);
             for (int i = header.length - 1; i >= 0; i--) {
                 System.out.print(header[i]);
             }

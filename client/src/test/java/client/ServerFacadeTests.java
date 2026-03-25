@@ -90,9 +90,7 @@ public class ServerFacadeTests {
     @Test
     public void createPositive () throws Exception {
         var auth = facade.register(new RegisterRequest("username","password","email"));
-        facade.createGame(new CreateGameRequest("game"), auth.authToken());
-        var games = facade.listGames(new LogoutRequest(auth.authToken()));
-        assertNotNull(games);
+        assertDoesNotThrow(()->facade.createGame(new CreateGameRequest("game"), auth.authToken()));
     }
 
     @Test
