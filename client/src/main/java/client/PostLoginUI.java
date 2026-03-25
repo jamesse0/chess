@@ -4,17 +4,21 @@ import dataaccess.DataAccessException;
 import model.GameData;
 import service.*;
 import ui.EscapeSequences;
+
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class PostLoginUI {
     private final ServerFacade server;
     private final Scanner scanner;
     private final Session session;
+    private ArrayList<GameData> userGames;
 
     public PostLoginUI (ServerFacade server, Scanner scanner, Session session) {
         this.server = server;
         this.scanner = scanner;
         this.session = session;
+        userGames = new ArrayList<>();
     }
 
     public State run () {
@@ -120,12 +124,16 @@ public class PostLoginUI {
         else {
             LogoutRequest request = new LogoutRequest(session.getAuthToken());
             ListGamesResult result = server.listGames(request);
-            for (GameData game: result.games()) {
+            userGames = (ArrayList<GameData>) result.games();
+            if (userGames.isEmpty()) {
+                System.out.println("There are currently no games.");
+            }
+            for (int i = 0; i < userGames.size(); i++) {
                 String yellow = EscapeSequences.SET_TEXT_COLOR_YELLOW;
                 String normal = EscapeSequences.RESET_TEXT_COLOR;
-                System.out.printf("%sGame Name: %s%s %sWHITE user: %s%s %sBLACK user: %s%s %sID: %s%d%s%n",
-                        yellow, normal, game.gameName(),yellow, normal, game.whiteUsername(),
-                                yellow, normal, game.blackUsername(),yellow, normal, game.gameID(),normal);
+                System.out.printf("%sGame Name: %s%s %sWHITE user: %s%s %sBLACK user: %s%s %sID: %s%d%s%n", yellow,
+                        normal, userGames.get(i).gameName(),yellow, normal, userGames.get(i).whiteUsername(),
+                        yellow, normal, userGames.get(i).blackUsername(), yellow, normal, i+1,normal);
             }
             return State.loggedIN;
         }
