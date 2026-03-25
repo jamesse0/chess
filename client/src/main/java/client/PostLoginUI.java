@@ -72,6 +72,7 @@ public class PostLoginUI {
           case "quit" -> {
               try {
                   handleLogout(tokens);
+                  System.out.println("Goodbye. See you soon.");
                   yield State.QUIT;
               } catch (DataAccessException error) {
                   System.out.println("Sorry. There was an issue quiting. Please try again.");
@@ -145,15 +146,15 @@ public class PostLoginUI {
             return State.loggedIN;
         }
         else {
-            int gameID = userGames.get(Integer.parseInt(tokens[1])).gameID();
+            int gameID = userGames.get(Integer.parseInt(tokens[1])-1).gameID();
             JoinGameRequest request = new JoinGameRequest(tokens[2], gameID);
             server.joinGame(request, session.getAuthToken());
             session.setGameID(request.gameID());
             session.setTeamColor(request.playerColor());
             String color = EscapeSequences.SET_TEXT_COLOR_MAGENTA;
             String normal = EscapeSequences.RESET_TEXT_COLOR;
-            System.out.printf("Joining game %s%d%s as %s%s%s%n",
-                    color, request.gameID(), normal, color, request.playerColor(), normal);
+            System.out.printf("Joining game %s%s%s as %s%s%s%n",
+                    color, tokens[1], normal, color, request.playerColor(), normal);
             return State.inGAME;
         }
     }
@@ -164,7 +165,8 @@ public class PostLoginUI {
             return State.loggedIN;
         }
         else {
-            session.setGameID(Integer.parseInt(tokens[1]));
+            int gameID = userGames.get(Integer.parseInt(tokens[1])-1).gameID();
+            session.setGameID(gameID);
             String color = EscapeSequences.SET_TEXT_COLOR_MAGENTA;
             String normal = EscapeSequences.RESET_TEXT_COLOR;
             System.out.printf("Joining game %s%d%s%n",
@@ -182,6 +184,8 @@ public class PostLoginUI {
             LogoutRequest request = new LogoutRequest(session.getAuthToken());
             server.logout(request);
             session.setAuth(null);
+            session.setUsername(null);
+            System.out.println("Logging you out and returning you to Login/Register Menu. Type 'help' for options.");
             return State.loggedOUT;
         }
     }
