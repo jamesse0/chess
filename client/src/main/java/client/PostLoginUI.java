@@ -63,6 +63,8 @@ public class PostLoginUI {
           case "observe" -> handleObserve(tokens);
           case "logout" -> {
               try {
+                  System.out.println
+                          ("Logging you out and returning you to Login/Register Menu. Type 'help' for options.");
                   yield handleLogout(tokens);
               } catch (Exception error) {
                   System.out.println("Sorry. There was an issue logging out. Please try again.");
@@ -150,10 +152,10 @@ public class PostLoginUI {
             try {
                 gameID = userGames.get(Integer.parseInt(tokens[1]) - 1).gameID();
             } catch (Exception error) {
-                System.out.println("Enter the ID as a digit.");
+                System.out.println("Enter the correct ID as a digit.");
                 return State.loggedIN;
             }
-            JoinGameRequest request = new JoinGameRequest(tokens[2], gameID);
+            JoinGameRequest request = new JoinGameRequest(tokens[2].toUpperCase(), gameID);
             server.joinGame(request, session.getAuthToken());
             session.setGameID(request.gameID());
             session.setTeamColor(request.playerColor());
@@ -175,7 +177,7 @@ public class PostLoginUI {
             try {
                 gameID = userGames.get(Integer.parseInt(tokens[1]) - 1).gameID();
             } catch (Exception error) {
-                System.out.println("Enter the ID as a digit.");
+                System.out.println("Enter the correct ID as a digit.");
                 return State.loggedIN;
             }
             session.setGameID(gameID);
@@ -197,7 +199,6 @@ public class PostLoginUI {
             server.logout(request);
             session.setAuth(null);
             session.setUsername(null);
-            System.out.println("Logging you out and returning you to Login/Register Menu. Type 'help' for options.");
             return State.loggedOUT;
         }
     }

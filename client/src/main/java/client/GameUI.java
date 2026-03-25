@@ -30,7 +30,9 @@ public class GameUI {
         System.out.printf("%nHere is the board (currently non-functional). Type 'leave' and then hit enter, " +
                 "and then type and enter 'help' to return to Game Menu.%n");
         while (true) {
+            System.out.printf("[IN_GAME] >>> %s", EscapeSequences.SET_TEXT_COLOR_GREEN);
             String line = scanner.nextLine();
+            System.out.print(EscapeSequences.RESET_TEXT_COLOR);
             var tokens = line.split(" ");
             if (tokens[0].trim().equals("leave")) {
                 session.setGameID(null);
