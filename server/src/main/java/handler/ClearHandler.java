@@ -1,9 +1,8 @@
 package handler;
 
-import service.ClearResult;
+import model.ClearResult;
 import service.ClearService;
-import com.google.gson.Gson;
-import dataaccess.DataAccessException;
+import model.DataAccessException;
 import io.javalin.http.Context;
 public class ClearHandler {
     private final ClearService clearService;

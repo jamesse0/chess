@@ -1,5 +1,7 @@
 package dataaccess;
 import java.sql.*;
+
+import model.DataAccessException;
 import model.UserData;
 
 

@@ -2,10 +2,10 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.AuthDAO;
-import dataaccess.DataAccessException;
+import model.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.GameID;
-import model.GameData;
+import model.*;
 
 public class GameService {
     private final GameDAO gameDAO;

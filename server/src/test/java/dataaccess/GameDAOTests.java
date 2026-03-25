@@ -1,5 +1,6 @@
 package dataaccess;
 import chess.ChessGame;
+import model.DataAccessException;
 import model.GameData;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;

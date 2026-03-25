@@ -1,5 +1,6 @@
 package dataaccess;
 
+import model.DataAccessException;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;

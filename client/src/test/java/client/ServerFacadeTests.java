@@ -1,9 +1,9 @@
 package client;
 
-import dataaccess.DataAccessException;
+import model.DataAccessException;
+import model.*;
 import org.junit.jupiter.api.*;
 import server.Server;
-import service.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 

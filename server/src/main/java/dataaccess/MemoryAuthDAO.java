@@ -1,7 +1,7 @@
 package dataaccess;
 
 import model.AuthData;
-import model.GameData;
+import model.DataAccessException;
 
 import java.util.HashMap;
 

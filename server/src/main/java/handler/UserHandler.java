@@ -1,7 +1,7 @@
 package handler;
+import model.*;
 import service.*;
 import com.google.gson.Gson;
-import dataaccess.DataAccessException;
 import io.javalin.http.Context;
 
 public class UserHandler {

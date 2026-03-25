@@ -1,8 +1,7 @@
 package client;
 
-import dataaccess.DataAccessException;
-import model.GameData;
-import service.*;
+import model.DataAccessException;
+import model.*;
 import ui.EscapeSequences;
 
 import java.util.ArrayList;

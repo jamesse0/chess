@@ -1,9 +1,9 @@
 package client;
 
-import dataaccess.DataAccessException;
-import service.LoginRequest;
-import service.RegisterRequest;
-import service.RegisterResult;
+import model.DataAccessException;
+import model.*;
+import model.RegisterRequest;
+import model.RegisterResult;
 import ui.EscapeSequences;
 
 import java.util.Scanner;

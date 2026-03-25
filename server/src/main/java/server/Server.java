@@ -2,13 +2,12 @@ package server;
 import handler.ClearHandler;
 import handler.GameHandler;
 import handler.UserHandler;
+import model.DataAccessException;
 import service.ClearService;
 import service.GameService;
 import service.UserService;
 import dataaccess.*;
 import io.javalin.*;
-
-import java.util.Map;
 
 import static dataaccess.DatabaseManager.configureDatabase;
 

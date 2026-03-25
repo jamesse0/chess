@@ -1,6 +1,7 @@
 package dataaccess;
 import java.sql.*;
 import model.AuthData;
+import model.DataAccessException;
 
 
 public class MySqlAuthDAO implements AuthDAO{

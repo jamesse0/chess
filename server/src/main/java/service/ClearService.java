@@ -1,9 +1,10 @@
 package service;
 
 import dataaccess.AuthDAO;
-import dataaccess.DataAccessException;
+import model.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
+import model.ClearResult;
 
 public class ClearService {
     private final AuthDAO authDAO;
