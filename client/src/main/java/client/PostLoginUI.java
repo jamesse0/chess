@@ -72,6 +72,11 @@ public class PostLoginUI {
                   yield State.loggedIN;
               }
           }
+          default -> {
+              System.out.println("Unknown command: " + command);
+              System.out.println("Type 'help' to see valid commands.");
+              yield State.loggedIN;
+          }
         };
     }
 

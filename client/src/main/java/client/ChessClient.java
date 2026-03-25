@@ -19,12 +19,14 @@ public class ChessClient {
         System.out.println("Welcome to cs240 Chess! type 'help' to start.");
         Scanner scanner = new Scanner(System.in);
         PreLoginUI preLoginUI = new PreLoginUI(server, scanner, session);
+        PostLoginUI postLoginUI = new PostLoginUI(server, scanner, session);
         while (currState != State.QUIT) {
             System.out.print(prompt());
             System.out.print(EscapeSequences.RESET_TEXT_COLOR);
             currState = switch (currState) {
                 case State.loggedOUT -> preLoginUI.run();
-                case State.loggedIN ->
+                case State.loggedIN -> postLoginUI.run();
+                case State.inGAME ->
             };
         }
     }

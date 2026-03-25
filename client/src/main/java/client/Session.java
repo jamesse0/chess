@@ -7,12 +7,14 @@ public class Session {
     private String username;
     private Integer gameID;
     private String teamColor;
+    private ChessGame game;
 
     public Session () {
         authToken = null;
         username = null;
         gameID = null;
         teamColor = null;
+        game = null;
     }
 
     public void setAuth (String authToken) {
@@ -37,5 +39,13 @@ public class Session {
 
     public Integer getGameID() {
         return gameID;
+    }
+
+    public void setGame (ChessGame theGame) {
+        game = theGame;
+    }
+
+    public ChessGame getGame() {
+        return game;
     }
 }
