@@ -51,10 +51,12 @@ public class GameUI {
             System.out.print(headerColor+ " "+displayRow+ " "+reset);
             for (int c = 0; c < 8; c++){
                 int displayCol = isWhite ? c : (7 - c);
-                boolean isLightSquare = (r + displayCol) % 2 == 0;
+                boolean isLightSquare = (r + c) % 2 == 0;
+                int boardRow = isWhite ? (8 - r) : (r + 1);
+                int boardCol = isWhite ? (c + 1) : (8 - c);
                 String bgColor = isLightSquare ? EscapeSequences.SET_BG_COLOR_WHITE:EscapeSequences.SET_BG_COLOR_BLACK;
                 System.out.print(bgColor);
-                ChessPiece piece = board.getPiece(new ChessPosition(displayRow,displayCol+1));
+                ChessPiece piece = board.getPiece(new ChessPosition(boardRow,boardCol));
                 String pieceChar;
                 String pieceColor =isLightSquare?EscapeSequences.SET_BG_COLOR_WHITE:EscapeSequences.SET_BG_COLOR_BLACK;
                 if (piece == null) {
