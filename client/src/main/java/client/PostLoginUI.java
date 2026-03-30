@@ -10,13 +10,13 @@ import java.util.Scanner;
 public class PostLoginUI {
     private final ServerFacade server;
     private final Scanner scanner;
-    private final Session session;
+    private final UserSession userSession;
     private ArrayList<GameData> userGames;
 
-    public PostLoginUI (ServerFacade server, Scanner scanner, Session session) {
+    public PostLoginUI (ServerFacade server, Scanner scanner, UserSession userSession) {
         this.server = server;
         this.scanner = scanner;
-        this.session = session;
+        this.userSession = userSession;
         userGames = new ArrayList<>();
     }
 
@@ -112,7 +112,7 @@ public class PostLoginUI {
         }
         else {
             CreateGameRequest request = new CreateGameRequest(tokens[1]);
-            CreateGameResult result = server.createGame(request, session.getAuthToken());
+            CreateGameResult result = server.createGame(request, userSession.getAuthToken());
             System.out.println("You create Game: " + tokens[1] + ". Type 'list' to find its information.");
             return State.loggedIN;
         }
@@ -124,7 +124,7 @@ public class PostLoginUI {
             return State.loggedIN;
         }
         else {
-            LogoutRequest request = new LogoutRequest(session.getAuthToken());
+            LogoutRequest request = new LogoutRequest(userSession.getAuthToken());
             ListGamesResult result = server.listGames(request);
             userGames = (ArrayList<GameData>) result.games();
             if (userGames.isEmpty()) {
@@ -155,9 +155,9 @@ public class PostLoginUI {
                 return State.loggedIN;
             }
             JoinGameRequest request = new JoinGameRequest(tokens[2].toUpperCase(), gameID);
-            server.joinGame(request, session.getAuthToken());
-            session.setGameID(request.gameID());
-            session.setTeamColor(request.playerColor());
+            server.joinGame(request, userSession.getAuthToken());
+            userSession.setGameID(request.gameID());
+            userSession.setTeamColor(request.playerColor());
             String color = EscapeSequences.SET_TEXT_COLOR_MAGENTA;
             String normal = EscapeSequences.RESET_TEXT_COLOR;
             System.out.printf("Joining game %s%s%s as %s%s%s%n",
@@ -179,7 +179,7 @@ public class PostLoginUI {
                 System.out.println("Enter the correct ID as a digit.");
                 return State.loggedIN;
             }
-            session.setGameID(gameID);
+            userSession.setGameID(gameID);
             String color = EscapeSequences.SET_TEXT_COLOR_MAGENTA;
             String normal = EscapeSequences.RESET_TEXT_COLOR;
             System.out.printf("Joining game %s%s%s%n",
@@ -194,10 +194,10 @@ public class PostLoginUI {
             return State.loggedIN;
         }
         else {
-            LogoutRequest request = new LogoutRequest(session.getAuthToken());
+            LogoutRequest request = new LogoutRequest(userSession.getAuthToken());
             server.logout(request);
-            session.setAuth(null);
-            session.setUsername(null);
+            userSession.setAuth(null);
+            userSession.setUsername(null);
             return State.loggedOUT;
         }
     }

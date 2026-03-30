@@ -2,14 +2,14 @@ package client;
 
 import chess.ChessGame;
 
-public class Session {
+public class UserSession {
     private String authToken;
     private String username;
     private Integer gameID;
     private String teamColor;
     private ChessGame game;
 
-    public Session () {
+    public UserSession() {
         authToken = null;
         username = null;
         gameID = null;

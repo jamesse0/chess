@@ -12,20 +12,20 @@ import java.util.Scanner;
 public class GameUI {
     private final ServerFacade server;
     private final Scanner scanner;
-    private final Session session;
+    private final UserSession userSession;
 
-    public GameUI (ServerFacade server, Scanner scanner, Session session) {
+    public GameUI (ServerFacade server, Scanner scanner, UserSession userSession) {
         this.server = server;
         this.scanner = scanner;
-        this.session = session;
+        this.userSession = userSession;
     }
 
     public State run () {
         boolean isWhite = true;
-        if (Objects.equals(session.getTeamColor(), "BLACK")){
+        if (Objects.equals(userSession.getTeamColor(), "BLACK")){
             isWhite = false;
         }
-        System.out.println("Here is the game, you are the " + session.getTeamColor() + " team.");
+        System.out.println("Here is the game, you are the " + userSession.getTeamColor() + " team.");
         drawBoard(new ChessGame().getBoard(), isWhite);
         System.out.printf("%nHere is the board (currently non-functional). Type 'leave' and then hit enter, " +
                 "and then type and enter 'help' to return to Game Menu.%n");
@@ -35,8 +35,8 @@ public class GameUI {
             System.out.print(EscapeSequences.RESET_TEXT_COLOR);
             var tokens = line.split(" ");
             if (tokens[0].trim().equals("leave")) {
-                session.setGameID(null);
-                session.setTeamColor(null);
+                userSession.setGameID(null);
+                userSession.setTeamColor(null);
                 return State.loggedIN;
             }
         }

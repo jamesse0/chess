@@ -5,22 +5,22 @@ import ui.EscapeSequences;
 import java.util.Scanner;
 
 public class ChessClient {
-    private Session session;
+    private UserSession userSession;
     private State currState;
     private final ServerFacade server;
 
     public ChessClient (String serverURL) {
         server = new ServerFacade(serverURL);
         currState = State.loggedOUT;
-        session = new Session();
+        userSession = new UserSession();
     }
 
     public void run () {
         System.out.println("Welcome to cs240 Chess! type 'help' to start.");
         Scanner scanner = new Scanner(System.in);
-        PreLoginUI preLoginUI = new PreLoginUI(server, scanner, session);
-        PostLoginUI postLoginUI = new PostLoginUI(server, scanner, session);
-        GameUI gameUI = new GameUI(server, scanner, session);
+        PreLoginUI preLoginUI = new PreLoginUI(server, scanner, userSession);
+        PostLoginUI postLoginUI = new PostLoginUI(server, scanner, userSession);
+        GameUI gameUI = new GameUI(server, scanner, userSession);
         while (currState != State.QUIT) {
             System.out.print(prompt());
             System.out.print(EscapeSequences.RESET_TEXT_COLOR);

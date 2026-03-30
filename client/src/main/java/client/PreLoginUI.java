@@ -11,12 +11,12 @@ import java.util.Scanner;
 public class PreLoginUI {
     private final ServerFacade server;
     private final Scanner scanner;
-    private final Session session;
+    private final UserSession userSession;
 
-    public PreLoginUI (ServerFacade server, Scanner scanner, Session session) {
+    public PreLoginUI (ServerFacade server, Scanner scanner, UserSession userSession) {
         this.server = server;
         this.scanner = scanner;
-        this.session = session;
+        this.userSession = userSession;
     }
 
     public State run () {
@@ -52,8 +52,8 @@ public class PreLoginUI {
             }
             case "quit" -> {
                 System.out.println("Goodbye. See you soon.");
-                session.setAuth(null);
-                session.setUsername(null);
+                userSession.setAuth(null);
+                userSession.setUsername(null);
                 yield State.QUIT;
             }
             default -> {
@@ -83,8 +83,8 @@ public class PreLoginUI {
         else {
             RegisterRequest request = new RegisterRequest(tokens[1],tokens[2], tokens[3]);
             RegisterResult result = server.register(request);
-            session.setAuth(result.authToken());
-            session.setUsername(result.username());
+            userSession.setAuth(result.authToken());
+            userSession.setUsername(result.username());
             System.out.println("Registered and logged in as " + result.username() + ". Type 'help' for new options.");
             return State.loggedIN;
         }
@@ -98,8 +98,8 @@ public class PreLoginUI {
         else {
             LoginRequest request = new LoginRequest(tokens[1],tokens[2]);
             RegisterResult result = server.login(request);
-            session.setUsername(result.username());
-            session.setAuth(result.authToken());
+            userSession.setUsername(result.username());
+            userSession.setAuth(result.authToken());
             System.out.println("Logged in as " + result.username() + ". Type 'help' for new options.");
             return State.loggedIN;
         }
