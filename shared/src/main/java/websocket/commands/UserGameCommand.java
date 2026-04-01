@@ -29,6 +29,8 @@ public class UserGameCommand {
         RESIGN
     }
 
+
+
     public CommandType getCommandType() {
         return commandType;
     }
