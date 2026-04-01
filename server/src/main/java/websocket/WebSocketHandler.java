@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import io.javalin.websocket.*;
 import org.eclipse.jetty.websocket.api.Session;
 import org.jetbrains.annotations.NotNull;
+import websocket.commands.FullUserGameCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
@@ -25,7 +26,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     @Override
     public void handleMessage(@NotNull WsMessageContext ctx) throws Exception {
         try {
-            UserGameCommand command = new Gson().fromJson(ctx.message(), UserGameCommand.class);
+            FullUserGameCommand command = new Gson().fromJson(ctx.message(), FullUserGameCommand.class);
             switch (command.getCommandType()) {
                 case CONNECT -> {
                 }
