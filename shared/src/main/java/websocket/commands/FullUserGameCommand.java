@@ -6,7 +6,7 @@ public class FullUserGameCommand extends UserGameCommand{
     private final String color;
 
     public FullUserGameCommand (UserGameCommand.CommandType commandType,
-                                String authToken, Integer gameID, String username, PlayerType playerType, String color) {
+                                String authToken, Integer gameID, String username, PlayerType playerType, String color){
         super(commandType, authToken, gameID);
 
         this.playerType = playerType;

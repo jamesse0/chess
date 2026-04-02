@@ -48,6 +48,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         ServerMessage message = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
         message.setMessage("Player " + username + "joined as " + color + " " + playerType);
         connections.broadcast(session, gameID, message);
+        ServerMessage connected = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+        connected.setMessage("Connecting to Game.");
+        session.getRemote().sendString(new Gson().toJson(connected));
     }
 
     private void leave
@@ -59,5 +62,5 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     }
 
-
+    private void makeMove
 }

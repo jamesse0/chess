@@ -81,4 +81,20 @@ public class GameService {
         }
         return result;
     }
+
+    public GameData getGame (String authToken, Integer gameID) throws DataAccessException {
+        if ((authToken == null) ||
+                (authDAO.getAuth(authToken) == null)) {
+            throw new DataAccessException("unauthorized");
+        }
+        return gameDAO.getGame(gameID);
+    }
+
+    public void updateGame (GameData gameData, String authToken) throws DataAccessException {
+        if ((authToken == null) ||
+                (authDAO.getAuth(authToken) == null)) {
+            throw new DataAccessException("unauthorized");
+        }
+        gameDAO.updateGame(gameData);
+    }
 }
