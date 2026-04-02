@@ -8,6 +8,8 @@ import websocket.commands.FullUserGameCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
+import java.io.IOException;
+
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
 
     private final ConnectionManager connections = new ConnectionManager();
@@ -40,10 +42,21 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    private void connect (Integer gameID, Session session) {
+    private void connect
+            (Integer gameID, Session session, String playerType, String username, String color) throws IOException {
         connections.add(gameID, session);
         ServerMessage message = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-        message.setMessage("Player connected to game");
+        message.setMessage("Player " + username + "joined as " + color + " " + playerType);
+        connections.broadcast(session, gameID, message);
+    }
+
+    private void leave
+            (Integer gameID, Session session, String playerType, String username, String color) throws IOException {
+        ServerMessage message = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+        message.setMessage(String.format("%s: %s has left the game.", playerType, username));
+        connections.broadcast(session, gameID, message);
+        connections.remove(gameID, session);
+
     }
 
 
