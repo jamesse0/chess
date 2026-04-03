@@ -1,9 +1,12 @@
 package websocket.commands;
 
+import chess.ChessMove;
+
 public class FullUserGameCommand extends UserGameCommand{
     private final PlayerType playerType;
     private final String username;
     private final String color;
+    private ChessMove chessMove;
 
     public FullUserGameCommand (UserGameCommand.CommandType commandType,
                                 String authToken, Integer gameID, String username, PlayerType playerType, String color){
@@ -37,5 +40,13 @@ public class FullUserGameCommand extends UserGameCommand{
 
     public String getColor() {
         return color;
+    }
+
+    public ChessMove getChessMove() {
+        return chessMove;
+    }
+
+    public void setChessMove(ChessMove chessMove) {
+        this.chessMove = chessMove;
     }
 }
