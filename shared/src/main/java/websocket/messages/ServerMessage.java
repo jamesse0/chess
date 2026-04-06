@@ -14,6 +14,7 @@ public class ServerMessage {
     ServerMessageType serverMessageType;
     String message;
     ChessGame gameState;
+    boolean gameOver = false;
     public enum ServerMessageType {
         LOAD_GAME,
         ERROR,
@@ -38,6 +39,14 @@ public class ServerMessage {
 
     public void setGameState(ChessGame gameState) {
         this.gameState = gameState;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
     }
 
     @Override

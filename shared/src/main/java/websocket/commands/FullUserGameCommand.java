@@ -7,6 +7,7 @@ public class FullUserGameCommand extends UserGameCommand{
     private final String username;
     private final String color;
     private ChessMove chessMove;
+    private boolean gameOver;
 
     public FullUserGameCommand (UserGameCommand.CommandType commandType,
                                 String authToken, Integer gameID, String username, PlayerType playerType, String color){
@@ -15,6 +16,7 @@ public class FullUserGameCommand extends UserGameCommand{
         this.playerType = playerType;
         this.username = username;
         this.color = color;
+        gameOver = false;
     }
 
     public enum PlayerType {
@@ -32,6 +34,14 @@ public class FullUserGameCommand extends UserGameCommand{
             response = "Player";
             return response;
         }
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
     }
 
     public String getUsername() {
