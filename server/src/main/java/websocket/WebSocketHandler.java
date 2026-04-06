@@ -34,19 +34,54 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     @Override
-    public void handleMessage(@NotNull WsMessageContext ctx) throws Exception {
+    public void handleMessage(@NotNull WsMessageContext ctx) {
         try {
             FullUserGameCommand command = new Gson().fromJson(ctx.message(), FullUserGameCommand.class);
             switch (command.getCommandType()) {
                 case CONNECT -> {
+                    try {
+                        connect(command.getGameID(), ctx.session, command.getPlayerTypeString(), command.getUsername(),
+                                command.getColor(), command.getAuthToken());
+                    } catch (Exception error) {
+                        ServerMessage errorMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                        errorMessage.setMessage("Error: There was an issue connecting. Please try again.");
+                        ctx.session.getRemote().sendString(new Gson().toJson(errorMessage));
+                    }
                 }
                 case MAKE_MOVE -> {
+                    try {
+                        makeMove(command.getGameID(), ctx.session, command.getPlayerTypeString(), command.getChessMove()
+                        , command.getUsername(), command.getAuthToken());
+                    } catch (Exception error) {
+                        ServerMessage errorMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                        errorMessage.setMessage("Error: Could Not Make Move. Ensure that it is your turn to move" +
+                                " and that your move is valid.");
+                        ctx.session.getRemote().sendString(new Gson().toJson(errorMessage));
+                    }
                 }
                 case LEAVE -> {
+                    try {
+                        leave(command.getGameID(), ctx.session, command.getPlayerTypeString(), command.getUsername(),
+                                command.getAuthToken(), command.getColor());
+                    } catch (Exception error) {
+                        ServerMessage errorMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                        errorMessage.setMessage("Error: There was an issue leaving. Please try again.");
+                        ctx.session.getRemote().sendString(new Gson().toJson(errorMessage));
+                    }
                 }
                 case RESIGN -> {
+                    try {
+                        resign(command.getGameID(), ctx.session, command.getPlayerTypeString(), command.getUsername(),
+                                command.getColor(), command.getAuthToken());
+                    } catch (Exception e) {
+                        ServerMessage errorMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                        errorMessage.setMessage("Error: There was an issue resigning. Please try again.");
+                        ctx.session.getRemote().sendString(new Gson().toJson(errorMessage));
+                    }
                 }
             }
+        } catch (Exception e) {
+            System.out.println("Websocket Failure");
         }
     }
 
