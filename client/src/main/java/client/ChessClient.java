@@ -1,10 +1,11 @@
 package client;
 
 import ui.EscapeSequences;
+import websocket.messages.ServerMessage;
 
 import java.util.Scanner;
 
-public class ChessClient {
+public class ChessClient implements NotificationHandler{
     private UserSession userSession;
     private State currState;
     private final ServerFacade server;
@@ -44,4 +45,8 @@ public class ChessClient {
     }
 
 
+    @Override
+    public void notify(ServerMessage serverMessage) {
+
+    }
 }
