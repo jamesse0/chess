@@ -13,7 +13,7 @@ import java.util.Objects;
 public class ServerMessage {
     ServerMessageType serverMessageType;
     String message;
-    ChessGame gameState;
+    ChessGame game;
     boolean gameOver = false;
     public enum ServerMessageType {
         LOAD_GAME,
@@ -33,12 +33,12 @@ public class ServerMessage {
 
     public void setMessage(String message) {this.message = message;}
 
-    public ChessGame getGameState() {
-        return gameState;
+    public ChessGame getGame() {
+        return game;
     }
 
-    public void setGameState(ChessGame gameState) {
-        this.gameState = gameState;
+    public void setGame(ChessGame game) {
+        this.game = game;
     }
 
     public boolean isGameOver() {

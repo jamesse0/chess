@@ -110,10 +110,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         ServerMessage message = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
         message.setMessage("Player " + username + "joined as " + color + " " + playerType);
         GameData gameData = gameService.getGame(authToken, gameID);
-        message.setGameState(gameData.game());
         connections.broadcast(session, gameID, message);
         ServerMessage connected = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-        connected.setMessage("Loading Game...");
+        connected.setGame(gameData.game());
         session.getRemote().sendString(new Gson().toJson(connected));
     }
 
@@ -164,7 +163,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             game.makeMove(chessMove);
             ServerMessage message = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
             message.setMessage("Loading board...");
-            message.setGameState(game);
+            message.setGame(game);
             ServerMessage notify = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
             int startRow = chessMove.getStartPosition().getRow();
             int startCol = chessMove.getStartPosition().getColumn();
