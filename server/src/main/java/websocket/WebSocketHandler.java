@@ -40,7 +40,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             switch (command.getCommandType()) {
                 case CONNECT -> {
                     try {
-                        connect(command.getGameID(), ctx.session, command.getPlayerTypeString(), command.getUsername(),
+                        connectHandler(command.getGameID(), ctx.session,
+                                command.getPlayerTypeString(), command.getUsername(),
                                 command.getColor(), command.getAuthToken());
                     } catch (Exception error) {
                         ServerMessage errorMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
@@ -50,7 +51,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 }
                 case MAKE_MOVE -> {
                     try {
-                        makeMove(command.getGameID(), ctx.session, command.getPlayerTypeString(), command.getChessMove()
+                        makeMoveHandler(command.getGameID(), ctx.session,
+                                command.getPlayerTypeString(), command.getChessMove()
                         , command.getUsername(), command.getAuthToken());
                     } catch (Exception error) {
                         ServerMessage errorMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
@@ -61,7 +63,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 }
                 case LEAVE -> {
                     try {
-                        leave(command.getGameID(), ctx.session, command.getPlayerTypeString(), command.getUsername(),
+                        leaveHandler(command.getGameID(), ctx.session,
+                                command.getPlayerTypeString(), command.getUsername(),
                                 command.getAuthToken(), command.getColor());
                     } catch (Exception error) {
                         ServerMessage errorMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
@@ -71,8 +74,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 }
                 case RESIGN -> {
                     try {
-                        resign(command.getGameID(), ctx.session, command.getPlayerTypeString(), command.getUsername(),
-                                command.getColor(), command.getAuthToken());
+                        resignHandler(command.getGameID(), ctx.session,
+                                command.getPlayerTypeString(), command.getUsername());
                     } catch (Exception e) {
                         ServerMessage errorMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
                         errorMessage.setMessage("Error: There was an issue resigning. Please try again.");
@@ -85,8 +88,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    private void resign (Integer gameID, Session session, String playerType,
-                         String username, String color, String authToken) throws Exception {
+    private void resignHandler (Integer gameID, Session session, String playerType,
+                         String username) throws Exception {
         if (playerType.equals("Observer")) {
             ServerMessage observer = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
             observer.setMessage("Error: As an observer you do not need to resign. Just use the 'leave' command.");
@@ -100,7 +103,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    private void connect
+    private void connectHandler
             (Integer gameID, Session session, String playerType,
              String username, String color, String authToken) throws IOException, DataAccessException {
         connections.add(gameID, session);
@@ -114,7 +117,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         session.getRemote().sendString(new Gson().toJson(connected));
     }
 
-    private void leave
+    private void leaveHandler
             (Integer gameID, Session session, String playerType, String username, String authToken, String color)
             throws IOException, DataAccessException {
         ServerMessage message = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
@@ -135,7 +138,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     }
 
-    private void makeMove (Integer gameID, Session session, String playerType, ChessMove chessMove, String username,
+    private void makeMoveHandler (Integer gameID, Session session, String playerType, ChessMove chessMove, String username,
                             String authToken)
                             throws IOException, DataAccessException, InvalidMoveException {
         if (playerType.equals("Observer")) {
