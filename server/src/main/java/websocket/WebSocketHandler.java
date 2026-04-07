@@ -9,6 +9,9 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.jetbrains.annotations.NotNull;
 import service.GameService;
 import websocket.commands.FullUserGameCommand;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -44,8 +47,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                                 command.getPlayerTypeString(), command.getUsername(),
                                 command.getColor(), command.getAuthToken());
                     } catch (Exception error) {
-                        ServerMessage errorMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
-                        errorMessage.setMessage("Error: There was an issue connecting. Please try again.");
+                        ErrorMessage errorMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR);
+                        errorMessage.setErrorMessage("Error: There was an issue connecting. Please try again.");
                         ctx.session.getRemote().sendString(new Gson().toJson(errorMessage));
                     }
                 }
@@ -55,8 +58,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                                 command.getPlayerTypeString(), command.getChessMove()
                         , command.getUsername(), command.getAuthToken());
                     } catch (Exception error) {
-                        ServerMessage errorMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
-                        errorMessage.setMessage("Error: Could Not Make Move. Ensure that it is your turn to move" +
+                        ErrorMessage errorMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR);
+                        errorMessage.setErrorMessage("Error: Could Not Make Move. Ensure that it is your turn to move" +
                                 " and that your move is valid.");
                         ctx.session.getRemote().sendString(new Gson().toJson(errorMessage));
                     }
@@ -67,8 +70,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                                 command.getPlayerTypeString(), command.getUsername(),
                                 command.getAuthToken(), command.getColor());
                     } catch (Exception error) {
-                        ServerMessage errorMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
-                        errorMessage.setMessage("Error: There was an issue leaving. Please try again.");
+                        ErrorMessage errorMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR);
+                        errorMessage.setErrorMessage("Error: There was an issue leaving. Please try again.");
                         ctx.session.getRemote().sendString(new Gson().toJson(errorMessage));
                     }
                 }
@@ -77,8 +80,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                         resignHandler(command.getGameID(), ctx.session,
                                 command.getPlayerTypeString(), command.getUsername());
                     } catch (Exception e) {
-                        ServerMessage errorMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
-                        errorMessage.setMessage("Error: There was an issue resigning. Please try again.");
+                        ErrorMessage errorMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR);
+                        errorMessage.setErrorMessage("Error: There was an issue resigning. Please try again.");
                         ctx.session.getRemote().sendString(new Gson().toJson(errorMessage));
                     }
                 }
@@ -91,14 +94,14 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private void resignHandler (Integer gameID, Session session, String playerType,
                          String username) throws Exception {
         if (playerType.equals("Observer")) {
-            ServerMessage observer = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
-            observer.setMessage("Error: As an observer you do not need to resign. Just use the 'leave' command.");
+            ErrorMessage observer = new ErrorMessage(ServerMessage.ServerMessageType.ERROR);
+            observer.setErrorMessage("Error: As an observer you do not need to resign. Just use the 'leave' command.");
             session.getRemote().sendString(new Gson().toJson(observer));
         }
         else {
-            ServerMessage resign = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+            NotificationMessage resign = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION);
             resign.setMessage(username+" has resigned. The Game is now over.");
-            resign.setGameOver(true);
+            gameService.gameOver(gameID);
             connections.broadcast(session, gameID, resign);
         }
     }
@@ -107,11 +110,11 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             (Integer gameID, Session session, String playerType,
              String username, String color, String authToken) throws IOException, DataAccessException {
         connections.add(gameID, session);
-        ServerMessage message = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+        NotificationMessage message = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION);
         message.setMessage("Player " + username + "joined as " + color + " " + playerType);
         GameData gameData = gameService.getGame(authToken, gameID);
         connections.broadcast(session, gameID, message);
-        ServerMessage connected = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+        LoadGameMessage connected = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME);
         connected.setGame(gameData.game());
         session.getRemote().sendString(new Gson().toJson(connected));
     }
@@ -119,7 +122,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private void leaveHandler
             (Integer gameID, Session session, String playerType, String username, String authToken, String color)
             throws IOException, DataAccessException {
-        ServerMessage message = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+        NotificationMessage message = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION);
         message.setMessage(String.format("%s: %s has left the game.%n", playerType, username));
         connections.broadcast(session, gameID, message);
         connections.remove(gameID, session);
@@ -141,8 +144,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                             String authToken)
                             throws IOException, DataAccessException, InvalidMoveException {
         if (playerType.equals("Observer")) {
-            ServerMessage observer = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
-            observer.setMessage("Error: As an observer you cannot make moves.");
+            ErrorMessage observer = new ErrorMessage(ServerMessage.ServerMessageType.ERROR);
+            observer.setErrorMessage("Error: As an observer you cannot make moves.");
             session.getRemote().sendString(new Gson().toJson(observer));
         }
         else {
@@ -161,10 +164,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 case PAWN -> "PAWN";
             };
             game.makeMove(chessMove);
-            ServerMessage message = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-            message.setMessage("Loading board...");
+            LoadGameMessage message = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME);
             message.setGame(game);
-            ServerMessage notify = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+            NotificationMessage notify = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION);
             int startRow = chessMove.getStartPosition().getRow();
             int startCol = chessMove.getStartPosition().getColumn();
             int endRow = chessMove.getEndPosition().getRow();
@@ -176,40 +178,40 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             connections.broadcast(session, gameID, notify);
             connections.broadcast(null, gameID, message);
             if (game.isInCheck(ChessGame.TeamColor.WHITE)) {
-                ServerMessage whiteInCheck = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+                NotificationMessage whiteInCheck = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION);
                 whiteInCheck.setMessage(whitePlayer + " is in check.");
-                whiteInCheck.setGameOver(true);
+                gameService.gameOver(gameID);
                 connections.broadcast(null, gameID, whiteInCheck);
             }
             if (game.isInCheck(ChessGame.TeamColor.BLACK)) {
-                ServerMessage blackInCheck = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+                NotificationMessage blackInCheck = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION);
                 blackInCheck.setMessage(blackPlayer + " is in check.");
-                blackInCheck.setGameOver(true);
+                gameService.gameOver(gameID);
                 connections.broadcast(null, gameID, blackInCheck);
             }
             if (game.isInCheckmate(ChessGame.TeamColor.WHITE)) {
-                ServerMessage whiteInCheckmate = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+                NotificationMessage whiteInCheckmate = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION);
                 whiteInCheckmate.setMessage(whitePlayer + " is in checkmate. " + blackPlayer + " wins.");
-                whiteInCheckmate.setGameOver(true);
+                gameService.gameOver(gameID);
                 connections.broadcast(null, gameID, whiteInCheckmate);
             }
             if (game.isInCheckmate(ChessGame.TeamColor.BLACK)) {
-                ServerMessage blackInCheckmate = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+                NotificationMessage blackInCheckmate = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION);
                 blackInCheckmate.setMessage(blackPlayer + " is in checkmate. " + whitePlayer + " wins.");
-                blackInCheckmate.setGameOver(true);
+                gameService.gameOver(gameID);
                 connections.broadcast(null, gameID, blackInCheckmate);
             }
 
             if (game.isInStalemate(ChessGame.TeamColor.WHITE)) {
-                ServerMessage whiteStalemate = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+                NotificationMessage whiteStalemate = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION);
                 whiteStalemate.setMessage(whitePlayer + " is in Stalemate. Game over.");
-                whiteStalemate.setGameOver(true);
+                gameService.gameOver(gameID);
                 connections.broadcast(null, gameID, whiteStalemate);
             }
             if (game.isInStalemate(ChessGame.TeamColor.BLACK)) {
-                ServerMessage blackStalemate = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+                NotificationMessage blackStalemate = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION);
                 blackStalemate.setMessage(whitePlayer + " is in Stalemate. Game over.");
-                blackStalemate.setGameOver(true);
+                gameService.gameOver(gameID);
                 connections.broadcast(null, gameID, blackStalemate);
             }
         }
