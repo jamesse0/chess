@@ -101,4 +101,8 @@ public class GameService {
     public void gameOver (Integer gameID) throws DataAccessException {
         gameDAO.gameOver(gameID);
     }
+
+    public boolean gameStatus (Integer gameID) throws DataAccessException {
+        return gameDAO.gameStatus(gameID);
+    }
 }

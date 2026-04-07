@@ -38,4 +38,9 @@ public class MemoryGameDAO implements GameDAO{
     public void gameOver(Integer gameID) throws DataAccessException {
 
     }
+
+    @Override
+    public boolean gameStatus(Integer gameID) throws DataAccessException {
+        return false;
+    }
 }

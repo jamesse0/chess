@@ -98,6 +98,12 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             observer.setErrorMessage("Error: As an observer you do not need to resign. Just use the 'leave' command.");
             session.getRemote().sendString(new Gson().toJson(observer));
         }
+        else if (gameService.gameStatus(gameID)) {
+            ErrorMessage gameOver = new ErrorMessage(ServerMessage.ServerMessageType.ERROR);
+            gameOver.setErrorMessage("Error: The game is already over so you do not need to resign. Use the 'leave'" +
+                    " command to return to the game menu.");
+            session.getRemote().sendString(new Gson().toJson(gameOver));
+        }
         else {
             NotificationMessage resign = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION);
             resign.setMessage(username+" has resigned. The Game is now over.");
@@ -147,6 +153,12 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             ErrorMessage observer = new ErrorMessage(ServerMessage.ServerMessageType.ERROR);
             observer.setErrorMessage("Error: As an observer you cannot make moves.");
             session.getRemote().sendString(new Gson().toJson(observer));
+        }
+        else if (gameService.gameStatus(gameID)) {
+            ErrorMessage gameOver = new ErrorMessage(ServerMessage.ServerMessageType.ERROR);
+            gameOver.setErrorMessage("Error: The game is over so new moves cannot be made. Use the 'leave'" +
+                    " command to return to the game menu.");
+            session.getRemote().sendString(new Gson().toJson(gameOver));
         }
         else {
             GameData gameData = gameService.getGame(authToken, gameID);

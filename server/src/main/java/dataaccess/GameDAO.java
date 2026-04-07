@@ -16,4 +16,6 @@ public interface GameDAO {
     void clear() throws DataAccessException;
 
     void gameOver (Integer gameID) throws DataAccessException;
+
+    boolean gameStatus (Integer gameID) throws DataAccessException;
 }

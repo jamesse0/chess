@@ -107,6 +107,23 @@ public class MySqlGameDAO implements GameDAO{
     }
 
     @Override
+    public boolean gameStatus(Integer gameID) throws DataAccessException {
+        var statement = "SELECT is_game_over FROM games WHERE game_id = ?";
+        try (Connection conn = DatabaseManager.getConnection()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(statement);
+            preparedStatement.setInt(1, gameID);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                boolean isGameOver = resultSet.getBoolean("is_game_over");
+                return isGameOver;
+            }
+        } catch (Exception error) {
+            throw new DataAccessException("gameStatus error");
+        }
+        return false;
+    }
+
+    @Override
     public void clear() throws DataAccessException {
         var statement = "TRUNCATE TABLE games";
         try (Connection conn = DatabaseManager.getConnection()) {
