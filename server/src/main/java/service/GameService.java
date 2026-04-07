@@ -97,4 +97,8 @@ public class GameService {
         }
         gameDAO.updateGame(gameData);
     }
+
+    public void gameOver (Integer gameID) throws DataAccessException {
+        gameDAO.gameOver(gameID);
+    }
 }

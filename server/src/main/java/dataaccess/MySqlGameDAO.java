@@ -94,6 +94,19 @@ public class MySqlGameDAO implements GameDAO{
     }
 
     @Override
+    public void gameOver (Integer gameID) throws DataAccessException {
+        var statement = "UPDATE games SET is_game_over = ? WHERE game_id = ?";
+        try (Connection conn = DatabaseManager.getConnection()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(statement);
+            preparedStatement.setBoolean(1,true);
+            preparedStatement.setInt(2,gameID);
+            preparedStatement.executeUpdate();
+        } catch (Exception error) {
+            throw new DataAccessException("gameOver error");
+        }
+    }
+
+    @Override
     public void clear() throws DataAccessException {
         var statement = "TRUNCATE TABLE games";
         try (Connection conn = DatabaseManager.getConnection()) {

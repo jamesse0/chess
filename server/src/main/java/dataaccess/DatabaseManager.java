@@ -49,6 +49,7 @@ public class DatabaseManager {
             black_username VARCHAR(255),
             game_name VARCHAR(255) NOT NULL,
             game TEXT,
+            is_game_over BOOLEAN NOT NULL DEFAULT FALSE,
             PRIMARY KEY (game_id)
             )
 
