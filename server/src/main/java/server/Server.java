@@ -8,6 +8,7 @@ import service.GameService;
 import service.UserService;
 import dataaccess.*;
 import io.javalin.*;
+import websocket.WebSocketHandler;
 
 import static dataaccess.DatabaseManager.configureDatabase;
 
@@ -17,6 +18,7 @@ public class Server {
     private final ClearHandler clearHandler;
     private final UserHandler userHandler;
     private final GameHandler gameHandler;
+    private final WebSocketHandler webSocketHandler;
     public Server() {
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
@@ -35,6 +37,7 @@ public class Server {
         clearHandler = new ClearHandler(clearService);
         userHandler = new UserHandler(userService);
         gameHandler = new GameHandler(gameService);
+        webSocketHandler = new WebSocketHandler(gameService);
     }
 
     public int run(int desiredPort) {
@@ -45,7 +48,12 @@ public class Server {
                 .delete("/session", userHandler::logoutHandler)
                 .get("/game", gameHandler::listGamesHandler)
                 .post("/game", gameHandler::createGameHandler)
-                .put("/game", gameHandler::joinGameHandler);
+                .put("/game", gameHandler::joinGameHandler)
+                .ws("/ws", ws -> {
+                    ws.onConnect(webSocketHandler);
+                    ws.onMessage(webSocketHandler);
+                    ws.onClose(webSocketHandler);
+                });
 
         // Register your endpoints and exception handlers here.
 
