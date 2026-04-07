@@ -12,9 +12,6 @@ import java.util.Objects;
  */
 public class ServerMessage {
     ServerMessageType serverMessageType;
-    String message;
-    ChessGame game;
-    boolean gameOver = false;
     public enum ServerMessageType {
         LOAD_GAME,
         ERROR,
@@ -27,26 +24,6 @@ public class ServerMessage {
 
     public ServerMessageType getServerMessageType() {
         return this.serverMessageType;
-    }
-
-    public String getMessage() {return message;}
-
-    public void setMessage(String message) {this.message = message;}
-
-    public ChessGame getGame() {
-        return game;
-    }
-
-    public void setGame(ChessGame game) {
-        this.game = game;
-    }
-
-    public boolean isGameOver() {
-        return gameOver;
-    }
-
-    public void setGameOver(boolean gameOver) {
-        this.gameOver = gameOver;
     }
 
     @Override
