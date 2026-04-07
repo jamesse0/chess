@@ -58,6 +58,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                                 command.getPlayerTypeString(), command.getChessMove()
                         , command.getUsername(), command.getAuthToken());
                     } catch (Exception error) {
+                        error.printStackTrace();
                         ErrorMessage errorMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR);
                         errorMessage.setErrorMessage("Error: Could Not Make Move. Ensure that it is your turn to move" +
                                 " and that your move is valid.");
@@ -115,14 +116,21 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private void connectHandler
             (Integer gameID, Session session, String playerType,
              String username, String color, String authToken) throws IOException, DataAccessException {
-        connections.add(gameID, session);
-        NotificationMessage message = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-        message.setMessage("Player " + username + "joined as " + color + " " + playerType);
         GameData gameData = gameService.getGame(authToken, gameID);
-        connections.broadcast(session, gameID, message);
-        LoadGameMessage connected = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-        connected.setGame(gameData.game());
-        session.getRemote().sendString(new Gson().toJson(connected));
+        if (gameData==null) {
+            ErrorMessage invalidID = new ErrorMessage(ServerMessage.ServerMessageType.ERROR);
+            invalidID.setErrorMessage("Error: Invalid GameID");
+            session.getRemote().sendString(new Gson().toJson(invalidID));
+        }
+        else {
+            connections.add(gameID, session);
+            NotificationMessage message = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+            message.setMessage("Player " + username + "joined as " + color + " " + playerType);
+            connections.broadcast(session, gameID, message);
+            LoadGameMessage connected = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+            connected.setGame(gameData.game());
+            session.getRemote().sendString(new Gson().toJson(connected));
+        }
     }
 
     private void leaveHandler
@@ -187,8 +195,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             notify.setMessage(String.format("%s moved %s from %d%s to %d%s%n", username, pieceString, startRow,
                     colHeader[startCol - 1], endRow, colHeader[endCol - 1]));
             gameService.updateGame(gameData, authToken);
-            connections.broadcast(session, gameID, notify);
             connections.broadcast(null, gameID, message);
+            connections.broadcast(session, gameID, notify);
             if (game.isInCheck(ChessGame.TeamColor.WHITE)) {
                 NotificationMessage whiteInCheck = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION);
                 whiteInCheck.setMessage(whitePlayer + " is in check.");
