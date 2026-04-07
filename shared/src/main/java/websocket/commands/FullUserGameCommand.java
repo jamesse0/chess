@@ -29,8 +29,7 @@ public class FullUserGameCommand extends UserGameCommand{
         if (playerType == PlayerType.OBSERVER) {
             response = "Observer";
             return response;
-        }
-        else {
+        } else {
             response = "Player";
             return response;
         }
