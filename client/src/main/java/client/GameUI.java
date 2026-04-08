@@ -52,8 +52,10 @@ public class GameUI {
                 case "redraw" -> {drawBoard(userSession.getGame().getBoard(), isWhite,false, null);}
                 case "resign" -> {
                     try {
-                        ws.resign(userSession.getGameID(), userSession.getPlayerType(), userSession.getUsername(),
-                                userSession.getTeamColor(), userSession.getAuthToken());
+                        if (confirmResign()) {
+                            ws.resign(userSession.getGameID(), userSession.getPlayerType(), userSession.getUsername(),
+                                    userSession.getTeamColor(), userSession.getAuthToken());
+                        }
                     } catch (Exception e) {
                         System.out.println("There was an issue resigning. Please try again.");
                     }
@@ -73,7 +75,19 @@ public class GameUI {
     }
 
     private boolean confirmResign() {
-
+        System.out.println("Are you sure you want to resign? " +
+                "Doing so means you forfeit the game. To resign, type 'Y'." +
+                " If you do not want to resign, enter any other letter and press enter.");
+        System.out.printf("[IN_GAME] >>> %s ", EscapeSequences.SET_TEXT_COLOR_GREEN);
+        String line = scanner.nextLine();
+        String confirmation = line.trim();
+        System.out.print(EscapeSequences.RESET_TEXT_COLOR);
+        if (confirmation.equalsIgnoreCase("Y")) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     private void helpStatement () {

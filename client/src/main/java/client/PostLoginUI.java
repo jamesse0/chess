@@ -158,6 +158,8 @@ public class PostLoginUI {
             }
             JoinGameRequest request = new JoinGameRequest(tokens[2].toUpperCase(), gameID);
             server.joinGame(request, userSession.getAuthToken());
+            ws.connect(userSession.getGameID(), userSession.getPlayerType(), userSession.getUsername(),
+                    userSession.getTeamColor(), userSession.getAuthToken());
             userSession.setGameID(request.gameID());
             userSession.setTeamColor(request.playerColor());
             String color = EscapeSequences.SET_TEXT_COLOR_MAGENTA;
