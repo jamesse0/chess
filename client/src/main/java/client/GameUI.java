@@ -28,7 +28,7 @@ public class GameUI {
             isWhite = false;
         }
         System.out.println("Here is the game, you are the " + userSession.getTeamColor() + " team.");
-        drawBoard(new ChessGame().getBoard(), isWhite);
+        drawBoard(userSession.getGame().getBoard(), isWhite);
         System.out.printf("%nHere is the board (currently non-functional). Type 'help' for options%n");
         while (true) {
             System.out.printf("[IN_GAME] >>> %s", EscapeSequences.SET_TEXT_COLOR_GREEN);
@@ -48,7 +48,17 @@ public class GameUI {
                         System.out.println("There was an issue leaving. Please try again.");
                     }
                 }
-                case "help" -> {}
+                case "help" -> {helpStatement();}
+                case "redraw" -> {drawBoard(userSession.getGame().getBoard(), isWhite);}
+                case "resign" -> {
+                    try {
+                        ws.resign(userSession.getGameID(), userSession.getPlayerType(), userSession.getUsername(),
+                                userSession.getTeamColor(), userSession.getAuthToken());
+                    } catch (Exception e) {
+                        System.out.println("There was an issue resigning. Please try again.");
+                    }
+                }
+                case "move" -> {}
             }
         }
     }
@@ -68,6 +78,10 @@ public class GameUI {
                 + EscapeSequences.RESET_TEXT_COLOR + "- to leave the game and return to Game Menu");
         System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + "help"
                 + EscapeSequences.RESET_TEXT_COLOR + "- with possible commands");
+    }
+
+    private void move (String[] tokens) throws Exception {
+
     }
 
     private void drawBoard(ChessBoard board, boolean isWhite) {
