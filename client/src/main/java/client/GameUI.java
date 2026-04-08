@@ -67,9 +67,13 @@ public class GameUI {
                     }
                 }
 
-                case "highlight" -> {}
+                case "highlight" -> {highlight(tokens,isWhite);}
             }
         }
+    }
+
+    private boolean confirmResign() {
+
     }
 
     private void helpStatement () {
@@ -116,17 +120,17 @@ public class GameUI {
     private void move (String[] tokens) throws Exception {
         if (tokens.length != 3) {
             System.out.println ("Incorrect Parameters Given. Please try again.");
+            return;
         }
-        else {
-            String rawStart = tokens[1];
-            String rawEnd = tokens[2];
-            String[] sPosition = rawStart.split("");
-            String[] ePosition = rawEnd.split("");
-            if ((sPosition.length != 2) || (ePosition.length!=2)) {
-                System.out.println ("Position coordinates not correct. Please try again.");
-            }
-            else {
-                Map<String, Integer> columnConversion = Map.of(
+        String rawStart = tokens[1];
+        String rawEnd = tokens[2];
+        String[] sPosition = rawStart.split("");
+        String[] ePosition = rawEnd.split("");
+        if ((sPosition.length != 2) || (ePosition.length!=2)) {
+            System.out.println ("Position coordinates not correct. Please try again.");
+            return;
+        }
+        Map<String, Integer> columnConversion = Map.of(
                         "a", 1,
                         "b", 2,
                         "c", 3,
@@ -135,19 +139,56 @@ public class GameUI {
                         "f", 6,
                         "g", 7,
                         "h", 8
-                );
-                int startRow = Integer.parseInt(sPosition[0]);
-                int startCol = columnConversion.get(sPosition[1]);
-                int endRow = Integer.parseInt(ePosition[0]);
-                int endCol = columnConversion.get(ePosition[1]);
-                ChessPosition startPosition = new ChessPosition(startRow, startCol);
-                ChessPosition endPosition = new ChessPosition(endRow, endCol);
-                ChessMove chessMove = new ChessMove(startPosition,endPosition,null);
-                ws.makeMove(userSession.getGameID(), userSession.getPlayerType(), userSession.getUsername(),
-                        userSession.getTeamColor(), userSession.getAuthToken(), chessMove);
+        );
+        int startRow = Integer.parseInt(sPosition[0]);
+        int startCol = columnConversion.get(sPosition[1]);
+        int endRow = Integer.parseInt(ePosition[0]);
+        int endCol = columnConversion.get(ePosition[1]);
+        ChessPosition startPosition = new ChessPosition(startRow, startCol);
+        ChessPosition endPosition = new ChessPosition(endRow, endCol);
+        ChessPiece.PieceType promotionPiece = null;
+        ChessPiece piece = userSession.getGame().getBoard().getPiece(startPosition);
+        if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
+            if ((piece.getTeamColor() == ChessGame.TeamColor.BLACK) && (endPosition.getRow()==1)) {
+                promotionPiece = promotionPrompt();
             }
-
+            if ((piece.getTeamColor() == ChessGame.TeamColor.WHITE) && (endPosition.getRow()==8)) {
+                promotionPiece = promotionPrompt();
+            }
         }
+        ChessMove chessMove = new ChessMove(startPosition,endPosition,promotionPiece);
+        ws.makeMove(userSession.getGameID(), userSession.getPlayerType(), userSession.getUsername(),
+                userSession.getTeamColor(), userSession.getAuthToken(), chessMove);
+    }
+
+    private ChessPiece.PieceType promotionPrompt () {
+        System.out.printf("This move results in a Pawn getting promoted. " +
+                "Choose what piece to promote it to.%nType 'Q' - queen%n'B' - bishop" +
+                "%n'N' - knight%n'R' - rook%n");
+        while (true) {
+            System.out.printf("[IN_GAME] >>> %s ", EscapeSequences.SET_TEXT_COLOR_GREEN);
+            String line = scanner.nextLine();
+            String promo = line.trim();
+            System.out.print(EscapeSequences.RESET_TEXT_COLOR);
+            if (promo.length() != 1) {
+                System.out.println("Invalid promotion command. Please try again.");
+                break;
+            }
+            Map<String, ChessPiece.PieceType> pieces = Map.of(
+                    "Q", ChessPiece.PieceType.QUEEN,
+                    "B", ChessPiece.PieceType.BISHOP,
+                    "N", ChessPiece.PieceType.KNIGHT,
+                    "R", ChessPiece.PieceType.ROOK
+            );
+            if (pieces.containsKey(promo.toUpperCase())) {
+                return pieces.get(promo.toUpperCase());
+            }
+            else {
+                System.out.println("Invalid promotion command. Please try again.");
+                break;
+            }
+        }
+        return null;
     }
 
     private void drawBoard(ChessBoard board, boolean isWhite, boolean highlight, ChessPosition selectedPosition) {
