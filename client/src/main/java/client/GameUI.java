@@ -1,11 +1,9 @@
 package client;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 import ui.EscapeSequences;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -58,7 +56,16 @@ public class GameUI {
                         System.out.println("There was an issue resigning. Please try again.");
                     }
                 }
-                case "move" -> {}
+                case "move" -> {
+                    try {
+                        move(tokens);
+                        drawBoard(userSession.getGame().getBoard(), isWhite);
+                    } catch (Exception e){
+                        System.out.println("There was an issue making that move. Please try again.");
+                    }
+                }
+
+                case "highlight" -> {}
             }
         }
     }
@@ -81,7 +88,40 @@ public class GameUI {
     }
 
     private void move (String[] tokens) throws Exception {
+        if (tokens.length != 3) {
+            System.out.println ("Incorrect Parameters Given. Please try again.");
+        }
+        else {
+            String rawStart = tokens[1];
+            String rawEnd = tokens[2];
+            String[] sPosition = rawStart.split("");
+            String[] ePosition = rawEnd.split("");
+            if ((sPosition.length != 2) || (ePosition.length!=2)) {
+                System.out.println ("Position coordinates not correct. Please try again.");
+            }
+            else {
+                Map<String, Integer> columnConversion = Map.of(
+                        "a", 1,
+                        "b", 2,
+                        "c", 3,
+                        "d", 4,
+                        "e", 5,
+                        "f", 6,
+                        "g", 7,
+                        "h", 8
+                );
+                int startRow = Integer.parseInt(sPosition[0]);
+                int startCol = columnConversion.get(sPosition[1]);
+                int endRow = Integer.parseInt(ePosition[0]);
+                int endCol = columnConversion.get(ePosition[1]);
+                ChessPosition startPosition = new ChessPosition(startRow, startCol);
+                ChessPosition endPosition = new ChessPosition(endRow, endCol);
+                ChessMove chessMove = new ChessMove(startPosition,endPosition,null);
+                ws.makeMove(userSession.getGameID(), userSession.getPlayerType(), userSession.getUsername(),
+                        userSession.getTeamColor(), userSession.getAuthToken(), chessMove);
+            }
 
+        }
     }
 
     private void drawBoard(ChessBoard board, boolean isWhite) {
