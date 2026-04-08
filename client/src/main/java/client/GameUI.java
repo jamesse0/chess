@@ -87,6 +87,10 @@ public class GameUI {
                 + EscapeSequences.RESET_TEXT_COLOR + "- with possible commands");
     }
 
+    private void highlight (String[] tokens, ChessBoard board, boolean isWhite) {
+
+    }
+
     private void move (String[] tokens) throws Exception {
         if (tokens.length != 3) {
             System.out.println ("Incorrect Parameters Given. Please try again.");
