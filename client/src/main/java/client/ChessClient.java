@@ -12,9 +12,12 @@ public class ChessClient implements NotificationHandler{
     private UserSession userSession;
     private State currState;
     private final ServerFacade server;
+    private final WebSocketFacade ws;
 
-    public ChessClient (String serverURL) {
+    public ChessClient (String serverURL) throws Exception {
+
         server = new ServerFacade(serverURL);
+        ws = new WebSocketFacade(serverURL, this);
         currState = State.loggedOUT;
         userSession = new UserSession();
     }

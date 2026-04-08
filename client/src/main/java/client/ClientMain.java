@@ -7,6 +7,10 @@ public class ClientMain {
         var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
         System.out.println("♕ 240 Chess Client: " + piece);
         var serverURL = "http://localhost:8080";
-        new ChessClient(serverURL).run();
+        try {
+            new ChessClient(serverURL).run();
+        } catch (Exception e) {
+            System.out.println("Unable to start server.");
+        }
     }
 }
