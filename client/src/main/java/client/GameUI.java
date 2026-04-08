@@ -3,9 +3,11 @@ package client;
 import chess.*;
 import ui.EscapeSequences;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.*;
 
 public class GameUI {
     private final ServerFacade server;
@@ -26,7 +28,7 @@ public class GameUI {
             isWhite = false;
         }
         System.out.println("Here is the game, you are the " + userSession.getTeamColor() + " team.");
-        drawBoard(userSession.getGame().getBoard(), isWhite);
+        drawBoard(userSession.getGame().getBoard(), isWhite, false,null);
         System.out.printf("%nHere is the board (currently non-functional). Type 'help' for options%n");
         while (true) {
             System.out.printf("[IN_GAME] >>> %s", EscapeSequences.SET_TEXT_COLOR_GREEN);
@@ -47,7 +49,7 @@ public class GameUI {
                     }
                 }
                 case "help" -> {helpStatement();}
-                case "redraw" -> {drawBoard(userSession.getGame().getBoard(), isWhite);}
+                case "redraw" -> {drawBoard(userSession.getGame().getBoard(), isWhite,false, null);}
                 case "resign" -> {
                     try {
                         ws.resign(userSession.getGameID(), userSession.getPlayerType(), userSession.getUsername(),
@@ -59,7 +61,7 @@ public class GameUI {
                 case "move" -> {
                     try {
                         move(tokens);
-                        drawBoard(userSession.getGame().getBoard(), isWhite);
+                        drawBoard(userSession.getGame().getBoard(), isWhite, false, null);
                     } catch (Exception e){
                         System.out.println("There was an issue making that move. Please try again.");
                     }
@@ -87,8 +89,28 @@ public class GameUI {
                 + EscapeSequences.RESET_TEXT_COLOR + "- with possible commands");
     }
 
-    private void highlight (String[] tokens, ChessBoard board, boolean isWhite) {
-
+    private void highlight (String[] tokens, boolean isWhite) {
+        if (tokens.length != 2) {
+            System.out.println ("Incorrect Parameters Given. Please try again.");
+        }
+        else {
+            String rawStart = tokens[1];
+            String[] sPosition = rawStart.split("");
+            Map<String, Integer> columnConversion = Map.of(
+                    "a", 1,
+                    "b", 2,
+                    "c", 3,
+                    "d", 4,
+                    "e", 5,
+                    "f", 6,
+                    "g", 7,
+                    "h", 8
+            );
+            int startRow = Integer.parseInt(sPosition[0]);
+            int startCol = columnConversion.get(sPosition[1]);
+            ChessPosition startPosition = new ChessPosition(startRow, startCol);
+            drawBoard(userSession.getGame().getBoard(), isWhite, true, startPosition);
+        }
     }
 
     private void move (String[] tokens) throws Exception {
@@ -128,9 +150,21 @@ public class GameUI {
         }
     }
 
-    private void drawBoard(ChessBoard board, boolean isWhite) {
+    private void drawBoard(ChessBoard board, boolean isWhite, boolean highlight, ChessPosition selectedPosition) {
         String headerColor = EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_BLACK;
         String reset = EscapeSequences.RESET_TEXT_COLOR+EscapeSequences.RESET_BG_COLOR;
+        ArrayList<ChessPosition> endPositions = new ArrayList<>();
+        if (highlight && (board.getPiece(selectedPosition)!=null)) {
+            ArrayList<ChessMove> validMoves = (ArrayList<ChessMove>)
+                    userSession.getGame().validMoves(selectedPosition);
+            for (ChessMove move: validMoves) {
+                endPositions.add(move.getEndPosition());
+            }
+        }
+        else if (highlight && (board.getPiece(selectedPosition) == null)) {
+            System.out.println("That space does not have a piece on it.");
+            return;
+        }
         printHeader(isWhite);
         for (int r=0; r<8; r++) {
             int displayRow = isWhite ? (8 - r) : (r + 1);
@@ -140,11 +174,23 @@ public class GameUI {
                 boolean isLightSquare = (r + c) % 2 == 0;
                 int boardRow = isWhite ? (8 - r) : (r + 1);
                 int boardCol = isWhite ? (c + 1) : (8 - c);
-                String bgColor = isLightSquare ? EscapeSequences.SET_BG_COLOR_WHITE:EscapeSequences.SET_BG_COLOR_BLACK;
+                String bgColor;
+                bgColor = isLightSquare ? EscapeSequences.SET_BG_COLOR_WHITE:EscapeSequences.SET_BG_COLOR_BLACK;
+                if (highlight && (board.getPiece(selectedPosition)!=null)) {
+                    ChessPosition currPosition = new ChessPosition(boardRow,boardCol);
+                    if (currPosition.equals(selectedPosition)) {
+                        bgColor = EscapeSequences.SET_BG_COLOR_YELLOW;
+                    }
+                    else if (endPositions.contains(currPosition)) {
+                        bgColor = isLightSquare ? EscapeSequences.SET_BG_COLOR_GREEN:
+                                EscapeSequences.SET_BG_COLOR_DARK_GREEN;
+
+                    }
+                }
                 System.out.print(bgColor);
                 ChessPiece piece = board.getPiece(new ChessPosition(boardRow,boardCol));
                 String pieceChar;
-                String pieceColor =isLightSquare?EscapeSequences.SET_BG_COLOR_WHITE:EscapeSequences.SET_BG_COLOR_BLACK;
+                String pieceColor = "";
                 if (piece == null) {
                     pieceChar = " ";
                 }
