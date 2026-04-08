@@ -68,4 +68,8 @@ public class UserService {
     private boolean verifyPasswords (String hashedPassword, String clearTextPassword) {
         return BCrypt.checkpw(clearTextPassword, hashedPassword);
     }
+
+    public AuthData getAuth (String authToken) throws DataAccessException {
+        return authDAO.getAuth(authToken);
+    }
 }

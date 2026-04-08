@@ -1,6 +1,9 @@
 package client;
 
 import ui.EscapeSequences;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import java.util.Scanner;
@@ -47,6 +50,19 @@ public class ChessClient implements NotificationHandler{
 
     @Override
     public void notify(ServerMessage serverMessage) {
-
+        if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
+            LoadGameMessage load = (LoadGameMessage) serverMessage;
+            userSession.setGame(load.getGame());
+        }
+        if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
+            NotificationMessage notification = (NotificationMessage) serverMessage;
+            String message = notification.getMessage();
+            System.out.println(EscapeSequences.SET_TEXT_COLOR_GREEN + message + EscapeSequences.RESET_TEXT_COLOR);
+        }
+        if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
+            ErrorMessage error = (ErrorMessage) serverMessage;
+            String errorMessage = error.getErrorMessage();
+            System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + errorMessage + EscapeSequences.RESET_TEXT_COLOR);
+        }
     }
 }

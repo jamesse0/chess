@@ -3,11 +3,13 @@ package websocket;
 import chess.*;
 import com.google.gson.Gson;
 import io.javalin.websocket.*;
+import model.AuthData;
 import model.DataAccessException;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.jetbrains.annotations.NotNull;
 import service.GameService;
+import service.UserService;
 import websocket.commands.FullUserGameCommand;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
@@ -20,9 +22,12 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     private final ConnectionManager connections = new ConnectionManager();
     private final GameService gameService;
+    private final UserService userService;
 
-    public WebSocketHandler (GameService gameService) {
+    public WebSocketHandler (GameService gameService, UserService userService) {
+
         this.gameService = gameService;
+        this.userService = userService;
     }
 
     @Override
@@ -54,11 +59,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 }
                 case MAKE_MOVE -> {
                     try {
-                        makeMoveHandler(command.getGameID(), ctx.session,
-                                command.getPlayerTypeString(), command.getChessMove()
+                        makeMoveHandler(command.getGameID(), ctx.session, command.getChessMove()
                         , command.getUsername(), command.getAuthToken());
                     } catch (Exception error) {
-                        error.printStackTrace();
                         ErrorMessage errorMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR);
                         errorMessage.setErrorMessage("Error: Could Not Make Move. Ensure that it is your turn to move" +
                                 " and that your move is valid.");
@@ -69,7 +72,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                     try {
                         leaveHandler(command.getGameID(), ctx.session,
                                 command.getPlayerTypeString(), command.getUsername(),
-                                command.getAuthToken(), command.getColor());
+                                command.getAuthToken());
                     } catch (Exception error) {
                         ErrorMessage errorMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR);
                         errorMessage.setErrorMessage("Error: There was an issue leaving. Please try again.");
@@ -79,7 +82,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 case RESIGN -> {
                     try {
                         resignHandler(command.getGameID(), ctx.session,
-                                command.getPlayerTypeString(), command.getUsername());
+                                 command.getUsername(), command.getAuthToken());
                     } catch (Exception e) {
                         ErrorMessage errorMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR);
                         errorMessage.setErrorMessage("Error: There was an issue resigning. Please try again.");
@@ -92,9 +95,14 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    private void resignHandler (Integer gameID, Session session, String playerType,
-                         String username) throws Exception {
-        if (playerType.equals("Observer")) {
+    private void resignHandler (Integer gameID, Session session,
+                         String username, String authToken) throws Exception {
+        AuthData userAuth = userService.getAuth(authToken);
+        GameData gameData = gameService.getGame(authToken, gameID);
+        ChessGame game = gameData.game();
+        String whitePlayer = gameData.whiteUsername();
+        String blackPlayer = gameData.blackUsername();
+        if ((!userAuth.username().equals(whitePlayer)) && (!userAuth.username().equals(blackPlayer)))  {
             ErrorMessage observer = new ErrorMessage(ServerMessage.ServerMessageType.ERROR);
             observer.setErrorMessage("Error: As an observer you do not need to resign. Just use the 'leave' command.");
             session.getRemote().sendString(new Gson().toJson(observer));
@@ -109,7 +117,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             NotificationMessage resign = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION);
             resign.setMessage(username+" has resigned. The Game is now over.");
             gameService.gameOver(gameID);
-            connections.broadcast(session, gameID, resign);
+            connections.broadcast(null, gameID, resign);
         }
     }
 
@@ -134,30 +142,38 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void leaveHandler
-            (Integer gameID, Session session, String playerType, String username, String authToken, String color)
+            (Integer gameID, Session session, String playerType, String username, String authToken)
             throws IOException, DataAccessException {
+        AuthData userAuth = userService.getAuth(authToken);
+        GameData gameData = gameService.getGame(authToken, gameID);
+        String whitePlayer = gameData.whiteUsername();
+        String blackPlayer = gameData.blackUsername();
         NotificationMessage message = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION);
         message.setMessage(String.format("%s: %s has left the game.%n", playerType, username));
         connections.broadcast(session, gameID, message);
         connections.remove(gameID, session);
-        if (playerType.equals("Player")) {
-            GameData gameData = gameService.getGame(authToken,gameID);
-            if (color.equals("BLACK")) {
-                gameService.updateGame(new GameData(gameData.gameID(),gameData.whiteUsername(),
+        if (userAuth.username().equals(blackPlayer)) {
+            gameService.updateGame(new GameData(gameData.gameID(),gameData.whiteUsername(),
                         null,gameData.gameName(),gameData.game()),authToken);
-            }
-            if (color.equals("WHITE")) {
-                gameService.updateGame(new GameData(gameData.gameID(),null,
-                        gameData.blackUsername(),gameData.gameName(),gameData.game()),authToken);
-            }
         }
+        if (userAuth.username().equals(whitePlayer)) {
+            gameService.updateGame(new GameData(gameData.gameID(),null,
+                        gameData.blackUsername(),gameData.gameName(),gameData.game()),authToken);
+        }
+
 
     }
 
-    private void makeMoveHandler (Integer gameID, Session session, String playerType, ChessMove chessMove, String username,
-                            String authToken)
+    private void makeMoveHandler (Integer gameID, Session session, ChessMove chessMove,
+                                  String username, String authToken)
                             throws IOException, DataAccessException, InvalidMoveException {
-        if (playerType.equals("Observer")) {
+        AuthData userAuth = userService.getAuth(authToken);
+        GameData gameData = gameService.getGame(authToken, gameID);
+        ChessGame game = gameData.game();
+        ChessBoard board = game.getBoard();
+        String whitePlayer = gameData.whiteUsername();
+        String blackPlayer = gameData.blackUsername();
+        if ((!userAuth.username().equals(whitePlayer)) && (!userAuth.username().equals(blackPlayer))) {
             ErrorMessage observer = new ErrorMessage(ServerMessage.ServerMessageType.ERROR);
             observer.setErrorMessage("Error: As an observer you cannot make moves.");
             session.getRemote().sendString(new Gson().toJson(observer));
@@ -169,12 +185,14 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             session.getRemote().sendString(new Gson().toJson(gameOver));
         }
         else {
-            GameData gameData = gameService.getGame(authToken, gameID);
-            ChessGame game = gameData.game();
-            ChessBoard board = game.getBoard();
-            String whitePlayer = gameData.whiteUsername();
-            String blackPlayer = gameData.blackUsername();
+            if ((userAuth.username().equals(whitePlayer)) && (game.getTeamTurn()== ChessGame.TeamColor.BLACK)) {
+                throw new InvalidMoveException();
+            }
+            if ((userAuth.username().equals(blackPlayer)) && (game.getTeamTurn()== ChessGame.TeamColor.WHITE)) {
+                throw new InvalidMoveException();
+            }
             ChessPiece piece = board.getPiece(chessMove.getStartPosition());
+            game.makeMove(chessMove);
             String pieceString = switch (piece.getPieceType()) {
                 case KING -> "KING";
                 case QUEEN -> "QUEEN";
@@ -183,7 +201,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 case ROOK -> "ROOK";
                 case PAWN -> "PAWN";
             };
-            game.makeMove(chessMove);
             LoadGameMessage message = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME);
             message.setGame(game);
             NotificationMessage notify = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION);
@@ -197,38 +214,43 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             gameService.updateGame(gameData, authToken);
             connections.broadcast(null, gameID, message);
             connections.broadcast(session, gameID, notify);
-            if (game.isInCheck(ChessGame.TeamColor.WHITE)) {
-                NotificationMessage whiteInCheck = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-                whiteInCheck.setMessage(whitePlayer + " is in check.");
-                gameService.gameOver(gameID);
-                connections.broadcast(null, gameID, whiteInCheck);
-            }
-            if (game.isInCheck(ChessGame.TeamColor.BLACK)) {
-                NotificationMessage blackInCheck = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-                blackInCheck.setMessage(blackPlayer + " is in check.");
-                gameService.gameOver(gameID);
-                connections.broadcast(null, gameID, blackInCheck);
-            }
+
             if (game.isInCheckmate(ChessGame.TeamColor.WHITE)) {
                 NotificationMessage whiteInCheckmate = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION);
                 whiteInCheckmate.setMessage(whitePlayer + " is in checkmate. " + blackPlayer + " wins.");
                 gameService.gameOver(gameID);
                 connections.broadcast(null, gameID, whiteInCheckmate);
             }
-            if (game.isInCheckmate(ChessGame.TeamColor.BLACK)) {
+
+            else if (game.isInCheck(ChessGame.TeamColor.WHITE)) {
+                NotificationMessage whiteInCheck = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+                whiteInCheck.setMessage(whitePlayer + " is in check.");
+                gameService.gameOver(gameID);
+                connections.broadcast(null, gameID, whiteInCheck);
+            }
+
+            else if (game.isInStalemate(ChessGame.TeamColor.WHITE)) {
+                NotificationMessage whiteStalemate = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+                whiteStalemate.setMessage(whitePlayer + " is in Stalemate. Game over.");
+                gameService.gameOver(gameID);
+                connections.broadcast(null, gameID, whiteStalemate);
+            }
+
+            if (game.isInCheck(ChessGame.TeamColor.BLACK)) {
+                NotificationMessage blackInCheck = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+                blackInCheck.setMessage(blackPlayer + " is in check.");
+                gameService.gameOver(gameID);
+                connections.broadcast(null, gameID, blackInCheck);
+            }
+
+            else if (game.isInCheckmate(ChessGame.TeamColor.BLACK)) {
                 NotificationMessage blackInCheckmate = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION);
                 blackInCheckmate.setMessage(blackPlayer + " is in checkmate. " + whitePlayer + " wins.");
                 gameService.gameOver(gameID);
                 connections.broadcast(null, gameID, blackInCheckmate);
             }
 
-            if (game.isInStalemate(ChessGame.TeamColor.WHITE)) {
-                NotificationMessage whiteStalemate = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-                whiteStalemate.setMessage(whitePlayer + " is in Stalemate. Game over.");
-                gameService.gameOver(gameID);
-                connections.broadcast(null, gameID, whiteStalemate);
-            }
-            if (game.isInStalemate(ChessGame.TeamColor.BLACK)) {
+            else if (game.isInStalemate(ChessGame.TeamColor.BLACK)) {
                 NotificationMessage blackStalemate = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION);
                 blackStalemate.setMessage(whitePlayer + " is in Stalemate. Game over.");
                 gameService.gameOver(gameID);
