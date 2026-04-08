@@ -1,6 +1,7 @@
 package client;
 
 import chess.ChessGame;
+import websocket.commands.FullUserGameCommand;
 
 public class UserSession {
     private String authToken;
@@ -8,6 +9,7 @@ public class UserSession {
     private Integer gameID;
     private String teamColor;
     private ChessGame game;
+    private FullUserGameCommand.PlayerType playerType;
 
     public UserSession() {
         authToken = null;
@@ -51,5 +53,21 @@ public class UserSession {
 
     public String getTeamColor() {
         return teamColor;
+    }
+
+    public FullUserGameCommand.PlayerType getPlayerType() {
+        return playerType;
+    }
+
+    public void setPlayerType(FullUserGameCommand.PlayerType playerType) {
+        this.playerType = playerType;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
     }
 }

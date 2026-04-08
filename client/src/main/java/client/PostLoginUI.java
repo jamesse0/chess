@@ -12,11 +12,13 @@ public class PostLoginUI {
     private final Scanner scanner;
     private final UserSession userSession;
     private ArrayList<GameData> userGames;
+    private final WebSocketFacade ws;
 
-    public PostLoginUI (ServerFacade server, Scanner scanner, UserSession userSession) {
+    public PostLoginUI (ServerFacade server, Scanner scanner, UserSession userSession, WebSocketFacade ws) {
         this.server = server;
         this.scanner = scanner;
         this.userSession = userSession;
+        this.ws = ws;
         userGames = new ArrayList<>();
     }
 

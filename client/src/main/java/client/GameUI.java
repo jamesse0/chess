@@ -13,11 +13,13 @@ public class GameUI {
     private final ServerFacade server;
     private final Scanner scanner;
     private final UserSession userSession;
+    private final WebSocketFacade ws;
 
-    public GameUI (ServerFacade server, Scanner scanner, UserSession userSession) {
+    public GameUI (ServerFacade server, Scanner scanner, UserSession userSession, WebSocketFacade ws) {
         this.server = server;
         this.scanner = scanner;
         this.userSession = userSession;
+        this.ws = ws;
     }
 
     public State run () {
@@ -27,19 +29,45 @@ public class GameUI {
         }
         System.out.println("Here is the game, you are the " + userSession.getTeamColor() + " team.");
         drawBoard(new ChessGame().getBoard(), isWhite);
-        System.out.printf("%nHere is the board (currently non-functional). Type 'leave' and then hit enter, " +
-                "and then type and enter 'help' to return to Game Menu.%n");
+        System.out.printf("%nHere is the board (currently non-functional). Type 'help' for options%n");
         while (true) {
             System.out.printf("[IN_GAME] >>> %s", EscapeSequences.SET_TEXT_COLOR_GREEN);
             String line = scanner.nextLine();
             System.out.print(EscapeSequences.RESET_TEXT_COLOR);
             var tokens = line.split(" ");
-            if (tokens[0].trim().equals("leave")) {
-                userSession.setGameID(null);
-                userSession.setTeamColor(null);
-                return State.loggedIN;
+            String command = tokens[0];
+            switch (command.trim()) {
+                case "leave" -> {
+                    try {
+                        ws.leave(userSession.getGameID(), userSession.getPlayerType(),
+                                userSession.getUsername(), userSession.getTeamColor(), userSession.getAuthToken());
+                        userSession.setGameID(null);
+                        userSession.setTeamColor(null);
+                        return State.loggedIN;
+                    } catch (Exception e) {
+                        System.out.println("There was an issue leaving. Please try again.");
+                    }
+                }
+                case "help" -> {}
             }
         }
+    }
+
+    private void helpStatement () {
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + "redraw"
+                + EscapeSequences.RESET_TEXT_COLOR + "- to redraw the current board");
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + "highlight <row number><column letter>"
+                + EscapeSequences.RESET_TEXT_COLOR + "- to show the potential moves of a piece at that space " +
+                "(ex. highlight 2a)");
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + "move <row number><column letter> " +
+                "<row number><column letter>"
+                + EscapeSequences.RESET_TEXT_COLOR + "- to move a piece from one square to another (ex. move 2a 3a)");
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + "resign"
+                + EscapeSequences.RESET_TEXT_COLOR + "- to forfeit the game");
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + "leave"
+                + EscapeSequences.RESET_TEXT_COLOR + "- to leave the game and return to Game Menu");
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + "help"
+                + EscapeSequences.RESET_TEXT_COLOR + "- with possible commands");
     }
 
     private void drawBoard(ChessBoard board, boolean isWhite) {
@@ -99,4 +127,6 @@ public class GameUI {
             System.out.println(EscapeSequences.RESET_TEXT_COLOR+EscapeSequences.RESET_BG_COLOR);
         }
     }
+
+
 }

@@ -25,9 +25,9 @@ public class ChessClient implements NotificationHandler{
     public void run () {
         System.out.println("Welcome to cs240 Chess! type 'help' to start.");
         Scanner scanner = new Scanner(System.in);
-        PreLoginUI preLoginUI = new PreLoginUI(server, scanner, userSession);
-        PostLoginUI postLoginUI = new PostLoginUI(server, scanner, userSession);
-        GameUI gameUI = new GameUI(server, scanner, userSession);
+        PreLoginUI preLoginUI = new PreLoginUI(server, scanner, userSession,ws);
+        PostLoginUI postLoginUI = new PostLoginUI(server, scanner, userSession,ws);
+        GameUI gameUI = new GameUI(server, scanner, userSession,ws);
         while (currState != State.QUIT) {
             System.out.print(prompt());
             System.out.print(EscapeSequences.RESET_TEXT_COLOR);

@@ -12,11 +12,13 @@ public class PreLoginUI {
     private final ServerFacade server;
     private final Scanner scanner;
     private final UserSession userSession;
+    private final WebSocketFacade ws;
 
-    public PreLoginUI (ServerFacade server, Scanner scanner, UserSession userSession) {
+    public PreLoginUI (ServerFacade server, Scanner scanner, UserSession userSession, WebSocketFacade ws) {
         this.server = server;
         this.scanner = scanner;
         this.userSession = userSession;
+        this.ws = ws;
     }
 
     public State run () {
