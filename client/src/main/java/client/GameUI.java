@@ -1,6 +1,7 @@
 package client;
 
 import chess.*;
+import model.DataAccessException;
 import ui.EscapeSequences;
 
 import java.util.ArrayList;
@@ -50,10 +51,7 @@ public class GameUI {
                         false, null);}
                 case "resign" -> {
                     try {
-                        if (confirmResign()) {
-                            ws.resign(userSession.getGameID(), userSession.getPlayerType(), userSession.getUsername(),
-                                    userSession.getTeamColor(), userSession.getAuthToken());
-                        }
+                        confirmResign();
                     } catch (Exception e) {
                         System.out.println("There was an issue resigning. Please try again.");
                     }
@@ -83,7 +81,7 @@ public class GameUI {
         }
     }
 
-    private boolean confirmResign() {
+    private void confirmResign() throws DataAccessException {
         System.out.println("Are you sure you want to resign? " +
                 "Doing so means you forfeit the game. To resign, type 'Y'." +
                 " If you do not want to resign, enter any other letter and press enter.");
@@ -92,10 +90,8 @@ public class GameUI {
         String confirmation = line.trim();
         System.out.print(EscapeSequences.RESET_TEXT_COLOR);
         if (confirmation.equalsIgnoreCase("Y")) {
-            return true;
-        }
-        else {
-            return false;
+            ws.resign(userSession.getGameID(), userSession.getPlayerType(), userSession.getUsername(),
+                    userSession.getTeamColor(), userSession.getAuthToken());
         }
     }
 
