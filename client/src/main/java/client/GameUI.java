@@ -69,7 +69,19 @@ public class GameUI {
                     }
                 }
 
-                case "highlight" -> {highlight(tokens,isWhite);}
+                case "highlight" -> {
+                    try {
+                        highlight(tokens, isWhite);
+                    } catch (Exception e) {
+                        System.out.println("There was an issue highlighting the board. Ensure that you have entered" +
+                                " the position properly. Please try again.");
+                    }
+                }
+
+                default -> {
+                    System.out.println("Unknown command: " + command);
+                    System.out.println("Type 'help' to see valid commands.");
+                }
             }
         }
     }
