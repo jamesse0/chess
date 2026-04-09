@@ -3,6 +3,7 @@ package client;
 import model.DataAccessException;
 import model.*;
 import ui.EscapeSequences;
+import websocket.commands.FullUserGameCommand;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -61,7 +62,15 @@ public class PostLoginUI {
                   yield State.loggedIN;
               }
           }
-          case "observe" -> handleObserve(tokens);
+          case "observe" -> {
+              try {
+                  yield handleObserve(tokens);
+              } catch (DataAccessException e) {
+                  System.out.println("Sorry. There was an issue observing this game. " +
+                          "Please try again.");
+                  yield State.loggedIN;
+              }
+          }
           case "logout" -> {
               try {
                   System.out.println
@@ -157,11 +166,12 @@ public class PostLoginUI {
                 return State.loggedIN;
             }
             JoinGameRequest request = new JoinGameRequest(tokens[2].toUpperCase(), gameID);
-            server.joinGame(request, userSession.getAuthToken());
-            ws.connect(userSession.getGameID(), userSession.getPlayerType(), userSession.getUsername(),
-                    userSession.getTeamColor(), userSession.getAuthToken());
             userSession.setGameID(request.gameID());
             userSession.setTeamColor(request.playerColor());
+            userSession.setPlayerType(FullUserGameCommand.PlayerType.PLAYER);
+            ws.connect(userSession.getGameID(), userSession.getPlayerType(), userSession.getUsername(),
+                    userSession.getTeamColor(), userSession.getAuthToken());
+            server.joinGame(request, userSession.getAuthToken());
             String color = EscapeSequences.SET_TEXT_COLOR_MAGENTA;
             String normal = EscapeSequences.RESET_TEXT_COLOR;
             System.out.printf("Joining game %s%s%s as %s%s%s%n",
@@ -170,7 +180,7 @@ public class PostLoginUI {
         }
     }
 
-    public State handleObserve (String[] tokens) {
+    public State handleObserve (String[] tokens) throws DataAccessException {
         if (tokens.length != 2) {
             System.out.println ("Incorrect Parameters Given. Please try again.");
             return State.loggedIN;
@@ -184,6 +194,9 @@ public class PostLoginUI {
                 return State.loggedIN;
             }
             userSession.setGameID(gameID);
+            userSession.setPlayerType(FullUserGameCommand.PlayerType.OBSERVER);
+            ws.connect(userSession.getGameID(), userSession.getPlayerType(), userSession.getUsername(),
+                    userSession.getTeamColor(), userSession.getAuthToken());
             String color = EscapeSequences.SET_TEXT_COLOR_MAGENTA;
             String normal = EscapeSequences.RESET_TEXT_COLOR;
             System.out.printf("Joining game %s%s%s%n",
