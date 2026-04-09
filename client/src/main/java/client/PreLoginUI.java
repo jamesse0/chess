@@ -87,7 +87,7 @@ public class PreLoginUI {
             RegisterResult result = server.register(request);
             userSession.setAuth(result.authToken());
             userSession.setUsername(result.username());
-            System.out.println("Registered and logged in as " + result.username() + ". Type 'help' for new options.");
+            System.out.println("Registered and logged in as " + result.username() + ". Type 'help' for more options.");
             return State.loggedIN;
         }
     }
@@ -102,7 +102,7 @@ public class PreLoginUI {
             RegisterResult result = server.login(request);
             userSession.setUsername(result.username());
             userSession.setAuth(result.authToken());
-            System.out.println("Logged in as " + result.username() + ". Type 'help' for new options.");
+            System.out.println("Logged in as " + result.username() + ".Type 'help' for more options.");
             return State.loggedIN;
         }
     }

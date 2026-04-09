@@ -43,6 +43,7 @@ public class GameUI {
                                 userSession.getUsername(), userSession.getTeamColor(), userSession.getAuthToken());
                         userSession.setGameID(null);
                         userSession.setTeamColor(null);
+                        System.out.println("Returning to Game Menu... Type 'help' for more options.");
                         return State.loggedIN;
                     } catch (Exception e) {
                         System.out.println("There was an issue leaving. Please try again.");
