@@ -102,7 +102,7 @@ public class PreLoginUI {
             RegisterResult result = server.login(request);
             userSession.setUsername(result.username());
             userSession.setAuth(result.authToken());
-            System.out.println("Logged in as " + result.username() + ".Type 'help' for more options.");
+            System.out.println("Logged in as " + result.username() + ". Type 'help' for more options.");
             return State.loggedIN;
         }
     }

@@ -133,7 +133,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         else {
             connections.add(gameID, session);
             NotificationMessage message = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-            message.setMessage("Player " + username + "joined as " + color + " " + playerType);
+            message.setMessage(username + " joined as " + color + " " + playerType);
             connections.broadcast(session, gameID, message);
             LoadGameMessage connected = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME);
             connected.setGame(gameData.game());
@@ -225,7 +225,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             else if (game.isInCheck(ChessGame.TeamColor.WHITE)) {
                 NotificationMessage whiteInCheck = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION);
                 whiteInCheck.setMessage(whitePlayer + " is in check.");
-                gameService.gameOver(gameID);
                 connections.broadcast(null, gameID, whiteInCheck);
             }
 
@@ -239,7 +238,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             if (game.isInCheck(ChessGame.TeamColor.BLACK)) {
                 NotificationMessage blackInCheck = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION);
                 blackInCheck.setMessage(blackPlayer + " is in check.");
-                gameService.gameOver(gameID);
                 connections.broadcast(null, gameID, blackInCheck);
             }
 

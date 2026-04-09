@@ -23,13 +23,8 @@ public class GameUI {
     }
 
     public State run () {
-        boolean isWhite = true;
-        if (Objects.equals(userSession.getTeamColor(), "BLACK")){
-            isWhite = false;
-        }
         System.out.println("Here is the game, you are the " + userSession.getTeamColor() + " team.");
-        drawBoard(userSession.getGame().getBoard(), isWhite, false,null);
-        System.out.printf("%nHere is the board (currently non-functional). Type 'help' for options%n");
+        System.out.printf("Type 'help' for options%n");
         while (true) {
             System.out.printf("[IN_GAME] >>> %s", EscapeSequences.SET_TEXT_COLOR_GREEN);
             String line = scanner.nextLine();
@@ -50,7 +45,9 @@ public class GameUI {
                     }
                 }
                 case "help" -> {helpStatement();}
-                case "redraw" -> {drawBoard(userSession.getGame().getBoard(), isWhite,false, null);}
+                case "redraw" -> {drawBoard(userSession.getGame().getBoard(),
+                        userSession.getTeamColor().equals("WHITE"),
+                        false, null);}
                 case "resign" -> {
                     try {
                         if (confirmResign()) {
@@ -64,7 +61,6 @@ public class GameUI {
                 case "move" -> {
                     try {
                         move(tokens);
-                        drawBoard(userSession.getGame().getBoard(), isWhite, false, null);
                     } catch (Exception e){
                         System.out.println("There was an issue making that move. Please try again.");
                     }
@@ -72,7 +68,7 @@ public class GameUI {
 
                 case "highlight" -> {
                     try {
-                        highlight(tokens, isWhite);
+                        highlight(tokens, userSession.getTeamColor().equals("WHITE"));
                     } catch (Exception e) {
                         System.out.println("There was an issue highlighting the board. Ensure that you have entered" +
                                 " the position properly. Please try again.");
@@ -190,7 +186,7 @@ public class GameUI {
 
     private ChessPiece.PieceType promotionPrompt () {
         System.out.printf("This move results in a Pawn getting promoted. " +
-                "Choose what piece to promote it to.%nType 'Q' - queen%n'B' - bishop" +
+                "Choose what piece to promote it to.%nType:%n 'Q' - queen%n'B' - bishop" +
                 "%n'N' - knight%n'R' - rook%n");
         while (true) {
             System.out.printf("[IN_GAME] >>> %s ", EscapeSequences.SET_TEXT_COLOR_GREEN);
@@ -199,7 +195,6 @@ public class GameUI {
             System.out.print(EscapeSequences.RESET_TEXT_COLOR);
             if (promo.length() != 1) {
                 System.out.println("Invalid promotion command. Please try again.");
-                break;
             }
             Map<String, ChessPiece.PieceType> pieces = Map.of(
                     "Q", ChessPiece.PieceType.QUEEN,
@@ -212,16 +207,15 @@ public class GameUI {
             }
             else {
                 System.out.println("Invalid promotion command. Please try again.");
-                break;
             }
         }
-        return null;
     }
 
-    private void drawBoard(ChessBoard board, boolean isWhite, boolean highlight, ChessPosition selectedPosition) {
+    public void drawBoard(ChessBoard board, boolean isWhite, boolean highlight, ChessPosition selectedPosition) {
         String headerColor = EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_BLACK;
         String reset = EscapeSequences.RESET_TEXT_COLOR+EscapeSequences.RESET_BG_COLOR;
         ArrayList<ChessPosition> endPositions = new ArrayList<>();
+        System.out.println("");
         if (highlight && (board.getPiece(selectedPosition)!=null)) {
             ArrayList<ChessMove> validMoves = (ArrayList<ChessMove>)
                     userSession.getGame().validMoves(selectedPosition);
@@ -279,6 +273,7 @@ public class GameUI {
             System.out.println(headerColor+ " "+displayRow+ " "+reset);
         }
         printHeader(isWhite);
+        System.out.println("");
     }
 
     private void printHeader(boolean isWhite) {

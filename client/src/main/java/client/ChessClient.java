@@ -13,21 +13,24 @@ public class ChessClient implements NotificationHandler{
     private State currState;
     private final ServerFacade server;
     private final WebSocketFacade ws;
-
+    private final PreLoginUI preLoginUI;
+    private final PostLoginUI postLoginUI;
+    private final GameUI gameUI;
+    private final Scanner scanner;
     public ChessClient (String serverURL) throws Exception {
 
         server = new ServerFacade(serverURL);
         ws = new WebSocketFacade(serverURL, this);
         currState = State.loggedOUT;
         userSession = new UserSession();
+        scanner = new Scanner(System.in);
+        preLoginUI = new PreLoginUI(server, scanner, userSession,ws);
+        postLoginUI = new PostLoginUI(server, scanner, userSession, ws);
+        gameUI = new GameUI(server, scanner, userSession,ws);
     }
 
     public void run () {
         System.out.println("Welcome to cs240 Chess! type 'help' to start.");
-        Scanner scanner = new Scanner(System.in);
-        PreLoginUI preLoginUI = new PreLoginUI(server, scanner, userSession,ws);
-        PostLoginUI postLoginUI = new PostLoginUI(server, scanner, userSession, ws);
-        GameUI gameUI = new GameUI(server, scanner, userSession,ws);
         while (currState != State.QUIT) {
             System.out.print(prompt());
             System.out.print(EscapeSequences.RESET_TEXT_COLOR);
@@ -47,7 +50,8 @@ public class ChessClient implements NotificationHandler{
             case inGAME -> "IN_GAME";
             case QUIT -> "QUIT";
         };
-        return String.format("[%s] >>> %s",state, EscapeSequences.SET_TEXT_COLOR_GREEN);
+        return String.format("%s[%s] >>> %s",EscapeSequences.RESET_TEXT_COLOR,state,
+                EscapeSequences.SET_TEXT_COLOR_GREEN);
     }
 
 
@@ -56,16 +60,21 @@ public class ChessClient implements NotificationHandler{
         if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
             LoadGameMessage load = (LoadGameMessage) serverMessage;
             userSession.setGame(load.getGame());
+            gameUI.drawBoard(userSession.getGame().getBoard(),userSession.getTeamColor().equals("WHITE"),
+                    false, null);
+            System.out.print(prompt());
         }
         if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
             NotificationMessage notification = (NotificationMessage) serverMessage;
             String message = notification.getMessage();
             System.out.println(EscapeSequences.SET_TEXT_COLOR_GREEN + message + EscapeSequences.RESET_TEXT_COLOR);
+            System.out.print(prompt());
         }
         if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
             ErrorMessage error = (ErrorMessage) serverMessage;
             String errorMessage = error.getErrorMessage();
             System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + errorMessage + EscapeSequences.RESET_TEXT_COLOR);
+            System.out.print(prompt());
         }
     }
 }

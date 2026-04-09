@@ -142,7 +142,7 @@ public class PostLoginUI {
                 System.out.println("There are currently no games.");
             }
             for (int i = 0; i < userGames.size(); i++) {
-                String yellow = EscapeSequences.SET_TEXT_COLOR_YELLOW;
+                String yellow = EscapeSequences.SET_TEXT_COLOR_BLUE;
                 String normal = EscapeSequences.RESET_TEXT_COLOR;
                 System.out.printf("%sGame Name: %s%s %sWHITE user: %s%s %sBLACK user: %s%s %sID: %s%d%s%n", yellow,
                         normal, userGames.get(i).gameName(),yellow, normal, userGames.get(i).whiteUsername(),
@@ -169,9 +169,9 @@ public class PostLoginUI {
             userSession.setGameID(request.gameID());
             userSession.setTeamColor(request.playerColor());
             userSession.setPlayerType(FullUserGameCommand.PlayerType.PLAYER);
+            server.joinGame(request, userSession.getAuthToken());
             ws.connect(userSession.getGameID(), userSession.getPlayerType(), userSession.getUsername(),
                     userSession.getTeamColor(), userSession.getAuthToken());
-            server.joinGame(request, userSession.getAuthToken());
             String color = EscapeSequences.SET_TEXT_COLOR_MAGENTA;
             String normal = EscapeSequences.RESET_TEXT_COLOR;
             System.out.printf("Joining game %s%s%s as %s%s%s%n",
@@ -195,11 +195,12 @@ public class PostLoginUI {
             }
             userSession.setGameID(gameID);
             userSession.setPlayerType(FullUserGameCommand.PlayerType.OBSERVER);
+            userSession.setTeamColor("WHITE");
             ws.connect(userSession.getGameID(), userSession.getPlayerType(), userSession.getUsername(),
                     userSession.getTeamColor(), userSession.getAuthToken());
             String color = EscapeSequences.SET_TEXT_COLOR_MAGENTA;
             String normal = EscapeSequences.RESET_TEXT_COLOR;
-            System.out.printf("Joining game %s%s%s%n",
+            System.out.printf("Observing game %s%s%s%n",
                     color, tokens[1], normal);
             return State.inGAME;
         }
